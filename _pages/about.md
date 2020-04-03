@@ -38,3 +38,4 @@ To create this blog I used the fast.ai [fastpages](https://fastpages.fast.ai/fas
 Thank you for your time, I hope you enjoy my blog posts.
 
 If you would like to get in contact with me you can via my twitter account or via this blog's email:
+![]({{ site.baseurl }}/images/Email.jpg)
