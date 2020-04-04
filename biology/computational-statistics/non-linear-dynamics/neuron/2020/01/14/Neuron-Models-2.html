@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Neuron Models 2: Exponential Integrate and Fire Model | Lewis Cole Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Neuron Models 2: Exponential Integrate and Fire Model" />
+<meta name="author" content="Lewis Cole (2020)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Following on from my previous blog post on neuron firing models we will move onto investigating other types of firing model. Previously we looked at the Hodgkin-Huxley model, this consisted of a system of 4 interacting PDEs to model each neuron. This makes studying the dynamics mathematically very tricky, especially if we want to consider responses to novel input signals and networks of neurons. In this blog post we will look at a simpler class of neuron firing model." />
+<meta property="og:description" content="Following on from my previous blog post on neuron firing models we will move onto investigating other types of firing model. Previously we looked at the Hodgkin-Huxley model, this consisted of a system of 4 interacting PDEs to model each neuron. This makes studying the dynamics mathematically very tricky, especially if we want to consider responses to novel input signals and networks of neurons. In this blog post we will look at a simpler class of neuron firing model." />
+<link rel="canonical" href="https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html" />
+<meta property="og:url" content="https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html" />
+<meta property="og:site_name" content="Lewis Cole Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-01-14T00:00:00-06:00" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"Following on from my previous blog post on neuron firing models we will move onto investigating other types of firing model. Previously we looked at the Hodgkin-Huxley model, this consisted of a system of 4 interacting PDEs to model each neuron. This makes studying the dynamics mathematically very tricky, especially if we want to consider responses to novel input signals and networks of neurons. In this blog post we will look at a simpler class of neuron firing model.","@type":"BlogPosting","headline":"Neuron Models 2: Exponential Integrate and Fire Model","dateModified":"2020-01-14T00:00:00-06:00","datePublished":"2020-01-14T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html"},"url":"https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://www.lewiscoleblog.com/feed.xml" title="Lewis Cole Blog" /><link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Neuron Models 2: Exponential Integrate and Fire Model | Lewis Cole Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Neuron Models 2: Exponential Integrate and Fire Model" />
+<meta name="author" content="Lewis Cole (2020)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Following on from my previous blog post on neuron firing models we will move onto investigating other types of firing model. Previously we looked at the Hodgkin-Huxley model, this consisted of a system of 4 interacting PDEs to model each neuron. This makes studying the dynamics mathematically very tricky, especially if we want to consider responses to novel input signals and networks of neurons. In this blog post we will look at a simpler class of neuron firing model." />
+<meta property="og:description" content="Following on from my previous blog post on neuron firing models we will move onto investigating other types of firing model. Previously we looked at the Hodgkin-Huxley model, this consisted of a system of 4 interacting PDEs to model each neuron. This makes studying the dynamics mathematically very tricky, especially if we want to consider responses to novel input signals and networks of neurons. In this blog post we will look at a simpler class of neuron firing model." />
+<link rel="canonical" href="https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html" />
+<meta property="og:url" content="https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html" />
+<meta property="og:site_name" content="Lewis Cole Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-01-14T00:00:00-06:00" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"Following on from my previous blog post on neuron firing models we will move onto investigating other types of firing model. Previously we looked at the Hodgkin-Huxley model, this consisted of a system of 4 interacting PDEs to model each neuron. This makes studying the dynamics mathematically very tricky, especially if we want to consider responses to novel input signals and networks of neurons. In this blog post we will look at a simpler class of neuron firing model.","@type":"BlogPosting","headline":"Neuron Models 2: Exponential Integrate and Fire Model","dateModified":"2020-01-14T00:00:00-06:00","datePublished":"2020-01-14T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html"},"url":"https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://www.lewiscoleblog.com/feed.xml" title="Lewis Cole Blog" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Lewis Cole Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a><a class="page-link" href="/search/">Search</a><a class="page-link" href="/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Neuron Models 2: Exponential Integrate and Fire Model</h1><p class="page-description">Following on from my previous blog post on neuron firing models we will move onto investigating other types of firing model. Previously we looked at the Hodgkin-Huxley model, this consisted of a system of 4 interacting PDEs to model each neuron. This makes studying the dynamics mathematically very tricky, especially if we want to consider responses to novel input signals and networks of neurons. In this blog post we will look at a simpler class of neuron firing model.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-01-14T00:00:00-06:00" itemprop="datePublished">
+        Jan 14, 2020
+      </time>• 
+          <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name">Lewis Cole (2020)</span></span>
+        <!-- • <span class="read-time" title="Estimated read time">
+    
+    
+      7 min read
+    
+</span>-->
+    </p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/categories/#biology">biology</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#computational-statistics">computational-statistics</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#non-linear-dynamics">non-linear-dynamics</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#neuron">neuron</a>
+        
+      
+      </p>
+    
+
+    
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Integrate-and-Fire-Models">Integrate and Fire Models </a></li>
+<li class="toc-entry toc-h2"><a href="#From-Hodgkin-Huxley-to-Integrate-and-Fire">From Hodgkin-Huxley to Integrate and Fire </a></li>
+<li class="toc-entry toc-h2"><a href="#Exponential-Integrate-and-Fire">Exponential Integrate and Fire </a></li>
+<li class="toc-entry toc-h2"><a href="#Conclusion">Conclusion </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#References">References </a></li>
+</ul>
+</li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-01-14-Neuron-Models-2.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Integrate-and-Fire-Models">
+<a class="anchor" href="#Integrate-and-Fire-Models" aria-hidden="true"><span class="octicon octicon-link"></span></a>Integrate and Fire Models<a class="anchor-link" href="#Integrate-and-Fire-Models"> </a>
+</h2>
+<p>Throughout this blog post we will focus on integrate and fire models. This class of model has been around for a long time, in fact longer than the Hodgkin-Huxley model. The first model was presented by Lapicque in 1907. Since then many alternative formulations have been presented. We can express the models in the form:
+
+$$ \tau \frac{dV}{dt} = -(V - E) + \psi(V) + R_m I(t) $$
+</p>
+<p>Where: <br>
+$\tau$ represents membrane time constant ($C_m / g_L$ in notation used previously) <br>
+$E$ represents the rest potential <br>
+$\psi(V)$ is the spike generating current term <br>
+$R_m$ represents membrane resistance ($1/g_L$) <br>
+$I(t)$ is a function representing an applied current (in the Hodgkin-Huxley example we took a Gaussian white noise)</p>
+<p>With integrate and fire models we have the issue that (typically) the action potential will shoot off to infinity. In order to stop this we implement a threshold ($V_{Th}$), when the process reaches this value it is reset (to $V_{Re}$) and the dynamics start again. This is not a big issue because for our purposes we are noly interested in the dynamics of an onset of an action potential, the mechanism of returning to normal levels is not of (much) interest. When modelling we may wish to hold the voltage at $V_{Re}$ following a spike for a short time ($\Delta_{T_{Rf}}$) to reflect the refractory period of a neuron. The refractory period can be modelled stochastically but usually a static value is succficient.</p>
+<p>Integrate and fire models are thus defined by the form of the function $\psi(V)$ - this function may be linear or non-linear. Examples include the leaky-integrate and fire model (linear), Fitzhugh-Nagumo (polynomial) and the exponential integrate and fire (non-linear).</p>
+<h2 id="From-Hodgkin-Huxley-to-Integrate-and-Fire">
+<a class="anchor" href="#From-Hodgkin-Huxley-to-Integrate-and-Fire" aria-hidden="true"><span class="octicon octicon-link"></span></a>From Hodgkin-Huxley to Integrate and Fire<a class="anchor-link" href="#From-Hodgkin-Huxley-to-Integrate-and-Fire"> </a>
+</h2>
+<p>We now take a quick de-tour to justify the use of the integrate and fire model as an approximation to the Hodgkin-Huxley dynamics.</p>
+<p>First we notice that gate m operates on a much faster time scale than gates n or h (and similarly much faster than the leak channel which controls the potential dynamics with all gates closed.) Given it is so much faster we can apply an instantaneous approximation, namely: $m(t) = \hat{m}(V_m(t))$ that is: the dynamics are defined by the membrane voltage. From plotting gate dynamics we can also observe that gates n and h are approximately translated reflections of each other. As an approximation we can create an adaptation variable $w$ with $n = aw$ and $h = b - w$ for constants $a, b$. We can then write down the equation:
+$ C_m \frac{dV_m}{dt} = I_p - \overline{g_K}(aw)^4(V_m-V_K) - \overline{g_{Na}}(\hat{m}(V_m))^3(b - w)(V_m-V_{Na}) - \overline{g_L}(V_m-V_L) $</p>
+<p>There is a corresponding equation for the adaptation variable $w$ which we shall not concern ourselves with. We are only interested in the onset of spiking not the refractory period dynamics so we will take $w = w_{rest}$ to be a fixed value. We can therefore express the voltage dynamics as: <br>
+$ C_m \frac{dV_m}{dt} = I_p - \overline{g_{eff}}(V_m-V_{eff}) - \lambda (\hat{m}(V_m))^3(V_m-V_{Na}) $</p>
+<p>By collecting terms and some re-arrangement. $g_{eff}, V_{eff}$ and $\lambda$ are all constant values. Therefore via the approximations outlined above we are left with an equation of the form: <br>
+$ \tau \frac{dV}{dt} = -(V - E) + \psi(V) + R_m I(t) $</p>
+<p>Namely an integrate and fire model.</p>
+<h2 id="Exponential-Integrate-and-Fire">
+<a class="anchor" href="#Exponential-Integrate-and-Fire" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exponential Integrate and Fire<a class="anchor-link" href="#Exponential-Integrate-and-Fire"> </a>
+</h2>
+<p>Continuing with the line of reasoning above we shall consider the function: $\hat{m}(V_m)$. We assume the dynamics are so rapid that they are essentially in equilibrium: <br>
+$ \frac{dm}{dt} = \alpha_m(V_m)(1-m) - \beta_m(V_m)m = 0 $ <br>
+So: <br>
+$ \hat{m}(V_m) = \frac{\alpha_m(V_m)}{\alpha_m(V_m) + \beta_m(V_m)}$</p>
+<p>Since Hodgkin-Huxley suggested the following forms of these equations: <br>
+$\alpha_m(V_m) = \frac{0.1(25-V_m)}{e^{(2.5-0.1V_m)}-1} $ <br>
+$\beta_m(V_m) = 4 e^{-V_m / 18} $ <br></p>
+<p>We can approximate $\hat{m}(V_m)$ with a logistic function: <br>
+$ \hat{m}(V_m) \approx (1 + e^{-\beta(V_m - \theta)})^{-1}$ <br>
+We can then express the Taylor expansion of this as:<br>
+$ \hat{m}(V_m) = \sum (-1)^k e^{\beta(V_m - \theta)(1+k)}$ <br>
+Which we can see from the expansion of $1/(1+y)$ with $y = e^{-\beta(V_m - \theta)}$. So a first order approximation is: <br>
+$ \hat{m}(V_m) \approx e^{\beta(V_m - \theta)}$</p>
+<p>Then the current corresponding to the sodium channel can be expressed approximately: <br>
+$I_{Na} = g_{Na}(b - w_{rest})(V_m - V_{Na}) e^{3\beta(V_m - \theta)} $</p>
+<p>If we take $(V_m - V_{Na}) \approx (V_{rest} - V_{Na}) &lt; 0$ as an approximation we get approximate voltage dynamics as: <br>
+$ C_m \frac{dV_m}{dt} = I_p - \overline{g_{eff}}(V_m-V_{eff}) + \hat{\lambda} e^{\beta (V_m - \theta)} $</p>
+<p>This is known as the exponential integrate and fire (EIF) model.This model has been shown to fit experimental data (and the Hodgkin-Huxley model) very well in practice. Typically we use a parameterization of the spiking term: <br>
+
+$$ \psi(V) = \Delta_T e^{\left( \frac{V - V_T}{\Delta_T} \right)} $$
+
+We can see this model is highly non-linear and without applying the threshold mechanics the membrane potential would shoot to infinity. The 2 new parameters in this model are: <br>
+$V_T$ which represents the voltage scale at which the exponential term becomes significant in the dynamics <br>
+$\Delta_T$ representing the sharpness of the spike</p>
+<p>With a Gaussian white noise term $\xi_t$ we can fully specify the dynamics using:
+
+$$\tau \frac{dV_m}{dt} = (V_L - V_m) + \Delta_T e^{\left( \frac{V_m - V_T}{\Delta_T} \right)} + \sigma \sqrt{2 \tau}\xi_t $$
+</p>
+<p>As before we can solve this using a foward Euler scheme (although the forcing term is non-linear this still provides a reasonable solution for small enough time steps.) An implementation of this can be seen below:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Implementation of a noisy EIF neuron using a forward Euler scheme</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="c1"># Set seed for repeatability</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+
+<span class="c1"># Set time step dt (ms) and number of steps N</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">0.001</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">50000</span>
+
+<span class="c1"># Set model parameters</span>
+<span class="c1"># Membrane time constant tau (ms) and leak reversal potential VL (mV)</span>
+<span class="n">tau</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">VL</span> <span class="o">=</span> <span class="o">-</span><span class="mi">70</span>
+
+<span class="c1"># Spike sharpness DelT (mV) and exponential potential threshold VT (mV)</span>
+<span class="n">DelT</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">VT</span> <span class="o">=</span> <span class="o">-</span><span class="mi">60</span>
+
+<span class="c1"># Variation in gaussian noise sig</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="mi">25</span>
+
+<span class="c1"># Set voltage spike threshold Vth (mV), reset voltage Vr (mV) and refractory period Tref (ms)</span>
+<span class="n">Vth</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">Vr</span> <span class="o">=</span> <span class="o">-</span><span class="mi">70</span>
+<span class="n">Tref</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># Set up arrays for time T (ms) and voltage V (mV)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt</span>
+<span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="n">V</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vr</span>
+
+<span class="c1"># Set up refractory period counter Tc (ms)</span>
+<span class="n">Tc</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">Tc</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vr</span>
+        <span class="n">Tc</span> <span class="o">-=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>    
+        <span class="n">Vtemp</span> <span class="o">=</span> <span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">dt</span><span class="o">/</span><span class="n">tau</span><span class="o">*</span><span class="p">(</span><span class="n">VL</span> <span class="o">-</span> <span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">DelT</span><span class="o">*</span><span class="n">dt</span><span class="o">/</span><span class="n">tau</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">VT</span><span class="p">)</span><span class="o">/</span><span class="n">DelT</span><span class="p">)</span> <span class="o">+</span> <span class="n">sig</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dt</span><span class="o">/</span><span class="n">tau</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Vtemp</span> <span class="o">&gt;</span> <span class="n">Vth</span><span class="p">:</span>
+            <span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vr</span>
+            <span class="n">Tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">Tref</span><span class="o">/</span><span class="n">dt</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vtemp</span>
+
+<span class="c1"># Plot voltage trajectory</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"Time (ms)"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">"Membrane Potential (mV)"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Membrane Voltage Trajectory"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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%0A">
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Conclusion">
+<a class="anchor" href="#Conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion<a class="anchor-link" href="#Conclusion"> </a>
+</h2>
+<p>The voltage trajectory displays realistic neuron dynamics for the onset of spiking. However as expected through the use of the refractory period implementation the depolarizing phase is not captured well. This is ok since we consider the information to be carried by the spike itself not the behaviour shortly afterwards. We can also see that this implementation is considerably simpler than that of Hodgkin-Huxely since there is only one ODE. This is of benefit when modelling large networks of neurons where time/computational constraints become a consideration.</p>
+<p>It has been shown that the EIF model can predict spiking behaviour very well in practice, despite the somewhat cavalier assumptions made during its derivation from the Hodgkin-Huxley.</p>
+<p>In a future blog post we will make use of the mathematical tractability of the EIF model to analyse neurons in more depth.</p>
+<h3 id="References">
+<a class="anchor" href="#References" aria-hidden="true"><span class="octicon octicon-link"></span></a>References<a class="anchor-link" href="#References"> </a>
+</h3>
+<ul>
+<li>
+<a href="https://neuronaldynamics.epfl.ch/online/Ch5.S2.html">https://neuronaldynamics.epfl.ch/online/Ch5.S2.html</a> - Online Neuronal Dynamics Textbook by Wulfram Gerstner, Werner M. Kistler, Richard Naud and Liam Paninski</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><a class="u-url" href="/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>A blog about maths, probability, modelling and computing.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/lewiscoleblog" title="lewiscoleblog"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/jazzcoffeestuff" title="jazzcoffeestuff"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
