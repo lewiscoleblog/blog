@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Cython Vs Numba | Lewis Cole Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Cython Vs Numba" />
+<meta name="author" content="Lewis Cole (2020)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This blog post is going to be a little different to the previous few posts I have made, there will be essentially no mathematics nor code. It is not intended as a how to or instructional post, merely a repository for my (current) opinions." />
+<meta property="og:description" content="This blog post is going to be a little different to the previous few posts I have made, there will be essentially no mathematics nor code. It is not intended as a how to or instructional post, merely a repository for my (current) opinions." />
+<link rel="canonical" href="https://www.lewiscoleblog.com/performant-python/computation/cython/numba/2020/02/04/Cython-Numba.html" />
+<meta property="og:url" content="https://www.lewiscoleblog.com/performant-python/computation/cython/numba/2020/02/04/Cython-Numba.html" />
+<meta property="og:site_name" content="Lewis Cole Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-02-04T00:00:00-06:00" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"This blog post is going to be a little different to the previous few posts I have made, there will be essentially no mathematics nor code. It is not intended as a how to or instructional post, merely a repository for my (current) opinions.","@type":"BlogPosting","headline":"Cython Vs Numba","dateModified":"2020-02-04T00:00:00-06:00","datePublished":"2020-02-04T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/performant-python/computation/cython/numba/2020/02/04/Cython-Numba.html"},"url":"https://www.lewiscoleblog.com/performant-python/computation/cython/numba/2020/02/04/Cython-Numba.html","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://www.lewiscoleblog.com/feed.xml" title="Lewis Cole Blog" /><link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Cython Vs Numba | Lewis Cole Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Cython Vs Numba" />
+<meta name="author" content="Lewis Cole (2020)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This blog post is going to be a little different to the previous few posts I have made, there will be essentially no mathematics nor code. It is not intended as a how to or instructional post, merely a repository for my (current) opinions." />
+<meta property="og:description" content="This blog post is going to be a little different to the previous few posts I have made, there will be essentially no mathematics nor code. It is not intended as a how to or instructional post, merely a repository for my (current) opinions." />
+<link rel="canonical" href="https://www.lewiscoleblog.com/performant-python/computation/cython/numba/2020/02/04/Cython-Numba.html" />
+<meta property="og:url" content="https://www.lewiscoleblog.com/performant-python/computation/cython/numba/2020/02/04/Cython-Numba.html" />
+<meta property="og:site_name" content="Lewis Cole Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-02-04T00:00:00-06:00" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"This blog post is going to be a little different to the previous few posts I have made, there will be essentially no mathematics nor code. It is not intended as a how to or instructional post, merely a repository for my (current) opinions.","@type":"BlogPosting","headline":"Cython Vs Numba","dateModified":"2020-02-04T00:00:00-06:00","datePublished":"2020-02-04T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/performant-python/computation/cython/numba/2020/02/04/Cython-Numba.html"},"url":"https://www.lewiscoleblog.com/performant-python/computation/cython/numba/2020/02/04/Cython-Numba.html","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://www.lewiscoleblog.com/feed.xml" title="Lewis Cole Blog" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Lewis Cole Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a><a class="page-link" href="/search/">Search</a><a class="page-link" href="/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Cython Vs Numba</h1><p class="page-description">This blog post is going to be a little different to the previous few posts I have made, there will be essentially no mathematics nor code. It is not intended as a how to or instructional post, merely a repository for my (current) opinions.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-02-04T00:00:00-06:00" itemprop="datePublished">
+        Feb 4, 2020
+      </time>• 
+          <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name">Lewis Cole (2020)</span></span>
+        <!-- • <span class="read-time" title="Estimated read time">
+    
+    
+      7 min read
+    
+</span>-->
+    </p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/categories/#performant-python">performant-python</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#computation">computation</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#cython">cython</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#numba">numba</a>
+        
+      
+      </p>
+    
+
+    
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Outline-of-the-Problem">Outline of the Problem </a></li>
+<li class="toc-entry toc-h2"><a href="#Outline-of-Cython">Outline of Cython </a></li>
+<li class="toc-entry toc-h2"><a href="#Outline-of-Numba">Outline of Numba </a></li>
+<li class="toc-entry toc-h2"><a href="#Which-is-better?">Which is better? </a></li>
+<li class="toc-entry toc-h2"><a href="#What-is-the-catch?">What is the catch? </a></li>
+<li class="toc-entry toc-h2"><a href="#What-about-PyPy/etc?">What about PyPy/etc? </a></li>
+<li class="toc-entry toc-h2"><a href="#Why-not-just-C/C++?">Why not just C/C++? </a></li>
+<li class="toc-entry toc-h2"><a href="#What-about-Julia?">What about Julia? </a></li>
+<li class="toc-entry toc-h2"><a href="#Conclusion">Conclusion </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-02-04-Cython-Numba.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Outline-of-the-Problem">
+<a class="anchor" href="#Outline-of-the-Problem" aria-hidden="true"><span class="octicon octicon-link"></span></a>Outline of the Problem<a class="anchor-link" href="#Outline-of-the-Problem"> </a>
+</h2>
+<p>Python at its core is slow for certain things. By being a dynamically typed and interpreted language you incur certain runtime overheads. In some cases these are not much of an issue. At other times they can be critical.</p>
+<p>Typically we will try and "vectorize" the code as much as possible (avoiding extraneous loops) and force as much code as we can into NumPy array operations which are typically "quick" (compiled C code). This is fine when it works, but it is not always possible to vectorize the code or, in some cases, the vectorization leads to code that is very hard to read/understand.</p>
+<p>Both Numba and Cython (not to be confused with CPython) aim to provide tools to deal with such situations.</p>
+<h2 id="Outline-of-Cython">
+<a class="anchor" href="#Outline-of-Cython" aria-hidden="true"><span class="octicon octicon-link"></span></a>Outline of Cython<a class="anchor-link" href="#Outline-of-Cython"> </a>
+</h2>
+<p>Cython is a programming language that is part Python and part C/C++, it can be compiled into a python extension and/or an executable. If you are familiar with Python it is reasonably easy to understand Cython code, it largely just has a few "boiler-plate" code blocks along with a few static type declarations (familiar to those who know C/C++/related languages).</p>
+<p>Since there are no dynamic types (in well written Cython code) and it is compiled typically the resulting code is orders of magnitude faster than Python. Compared to vectorised NumPy there may not be a significant improvement but this depends on the exact implementation.</p>
+<p>Cython itself is very flexible, if you can express the code in Python it is unlikely you will not be able to express it in Cython. Any arbitrary class structure can work within Cython, as a result it is used for many "high performance" Python packages (e.g. SciPy).</p>
+<p>It is possible to parallelize the code or utilise GPU computation using Cython. This normally requires a bit of work but typically does not require nearly as much work as using Cuda in C++ (for example). As usual the normal caveats relating to multi-thread applications also apply to Cython code.</p>
+<p><a href="https://cython.readthedocs.io/en/latest/">You can read the Cython documentation here!</a></p>
+<h2 id="Outline-of-Numba">
+<a class="anchor" href="#Outline-of-Numba" aria-hidden="true"><span class="octicon octicon-link"></span></a>Outline of Numba<a class="anchor-link" href="#Outline-of-Numba"> </a>
+</h2>
+<p>Numba is a slightly different beast. It uses the concept of a "just in time" compiler (JIT). Essentially this means that code is compiled "on the fly" during runtime instead of requiring compilation prior to execution. Numba compiles the python code using a LLVM compiler.</p>
+<p>The syntax is very simple and most of the time just requires a simple decorator on a Python function. It also allows for parallelisation and GPU computation very simply (typically just a "target = 'cuda'" type statement in a decorator). In my experience a lot less thinking is required to set this up compared to Cython.</p>
+<p>The downside of Numba (at least for me) is that it is a (comparatively) new package and as such does not have support for absolutely everything you would want, unlike with Cython it is possible to just "hit the wall" where you simply cannot use Numba without a major re-writing of the code. (One such example being you cannot call @guvectorize functions inside the @njit decorator). It is worth checking the github issues log regularly as often these issues are on the docket to be corrected in future releases.</p>
+<p>Another downside of Numba is the lack of useful traceback, typically you need to "switch off" Numba and run in regular python to track down an error. This is typically only a minor inconvenience but if the code is particularly slow it can get frustrating trying to find an error without the Numba speed up.</p>
+<p><a href="https://numba.pydata.org/">You can read more about Numba here!</a></p>
+<h2 id="Which-is-better?">
+<a class="anchor" href="#Which-is-better?" aria-hidden="true"><span class="octicon octicon-link"></span></a>Which is better?<a class="anchor-link" href="#Which-is-better?"> </a>
+</h2>
+<p>From a raw performance perspective I do not see either Cython nor Numba consistently beating the other in all situations. Typically the performance will be comparable and you will rarely find one being many orders of magnitude quicker (assuming you're using both correctly).</p>
+<p>The choice of which to use, in my opinion, comes down to other factors. Convenience being a big one, I typically find Numba easier and quicker to implement when it works. As noted above however it doesn't always work (e.g. if using class structures, custom data types, etc.) With familiarity you do get an instinct as to whether a code will work or not. Cython on the other hand offers much more flexibility.</p>
+<p>There is also the issue of how the code will be used. Cython is well established for creating efficient extension modules that sit nicely within the Python eco-system. Numba can be used in a similar way but I have found it a bit more finnicky to deal with (for example through Numba itself changing its API fairly regularly since it's a relatively new module, some code from previous iterations of Numba simply does not work at all with the later versions).</p>
+<h2 id="What-is-the-catch?">
+<a class="anchor" href="#What-is-the-catch?" aria-hidden="true"><span class="octicon octicon-link"></span></a>What is the catch?<a class="anchor-link" href="#What-is-the-catch?"> </a>
+</h2>
+<p>Unfortunately things are not perfect, typically we will still be interfacing Cython/Numba functions via Python and so using repeated calls to these functions we will still incur overheads (typically through the conversion to Python types). This can mean that certain code is still significantly slower than C/C++ equivalents. These packages are therefore most useful for when you have profiled your code and can see that a handful of functions/operations are the real bottleneck.</p>
+<p>These packages may not help if your code is particularly memory intensive, in which case it is better to spend time thinking about memory management instead. In some cases these packages provide some help in that respect also (e.g. NumPy is prone to creating many cached variables for simple operations, if the variables are large arrays this can become a pain.)</p>
+<h2 id="What-about-PyPy/etc?">
+<a class="anchor" href="#What-about-PyPy/etc?" aria-hidden="true"><span class="octicon octicon-link"></span></a>What about PyPy/etc?<a class="anchor-link" href="#What-about-PyPy/etc?"> </a>
+</h2>
+<p>Another option for performant Python code is to use PyPy instead of CPython. I have not used this very much yet, if I get the time to really kick the tyres I may write another blog on my findings. There are some features that appear useful but the eco-system is not as well supported (yet?) and so may require some additional work to recreate some high level functionality.</p>
+<p><a href="https://www.pypy.org/">You can read more about PyPy here!</a></p>
+<h2 id="Why-not-just-C/C++?">
+<a class="anchor" href="#Why-not-just-C/C++?" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why not just C/C++?<a class="anchor-link" href="#Why-not-just-C/C++?"> </a>
+</h2>
+<p>Ultimately if you require peak performance at all costs these options are still no substitute for well written C/C++. However as I often warn people: computation time is generally cheaper than human time - it is often better to use a slightly sub-optimal (but still respectable) code than devote months to R&amp;D and slow down the development cycle. Since Numba/Cython are so similar to Python (and it is possible to just "tack on" some Python to the end of these codes) you can prototype much more quickly in my experience. All these factors (along with many others such as where the code is to be deployed, what other tools are being used, etc.) need to be weighed up.</p>
+<h2 id="What-about-Julia?">
+<a class="anchor" href="#What-about-Julia?" aria-hidden="true"><span class="octicon octicon-link"></span></a>What about Julia?<a class="anchor-link" href="#What-about-Julia?"> </a>
+</h2>
+<p>Some readers may be familiar with the Julia language as an option for high performance scientific computing. I have a little experience (but am far from an expert). As I understand Julia is based around JIT (as with Numba), however being a language to itself it never needs to interface with Python and its limitations. It can therefore create more efficient code for larger scale projects since they never have to worry about Python overheads. Typically the benchmarks seen online are for smaller "toy" problems and so the performance does not appear to be too different from Cython/Numba.</p>
+<p>I have not switched to Julia for a few reasons, firstly the popularity of Python - it is typically fairly easy to learn Cython/Numba for somebody who understands Python/NumPy making collaboration easier. Secondly the Python eco-system is well developed there is typically a package available to do almost anything you would want. Thirdly at this point it is fairly easy to get Python to "speak" with other systems if you need to turn something from a prototype to production. These concerns are ultimately just related to uptake however, as more people use Julia I see this becoming less of a concern.</p>
+<p><a href="https://julialang.org/">You can read more about Julia here!</a></p>
+<h2 id="Conclusion">
+<a class="anchor" href="#Conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion<a class="anchor-link" href="#Conclusion"> </a>
+</h2>
+<p>Hopefully now we can see that Cython/Numba provide useful tools for bridging the gap between Python and C/C++ runtimes. As the old saying goes "you cannot have your cake and eat it too" and so it may not be possible to get performance as quick using these options. However we can often get performance that is "good enough" in practical terms.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><a class="u-url" href="/performant-python/computation/cython/numba/2020/02/04/Cython-Numba.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>A blog about maths, probability, modelling and computing.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/lewiscoleblog" title="lewiscoleblog"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/jazzcoffeestuff" title="jazzcoffeestuff"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
