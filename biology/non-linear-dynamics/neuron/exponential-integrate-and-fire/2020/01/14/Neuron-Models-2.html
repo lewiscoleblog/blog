@@ -10,13 +10,14 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Following on from my previous blog post on neuron firing models we will move onto investigating other types of firing model. Previously we looked at the Hodgkin-Huxley model, this consisted of a system of 4 interacting PDEs to model each neuron. This makes studying the dynamics mathematically very tricky, especially if we want to consider responses to novel input signals and networks of neurons. In this blog post we will look at a simpler class of neuron firing model." />
 <meta property="og:description" content="Following on from my previous blog post on neuron firing models we will move onto investigating other types of firing model. Previously we looked at the Hodgkin-Huxley model, this consisted of a system of 4 interacting PDEs to model each neuron. This makes studying the dynamics mathematically very tricky, especially if we want to consider responses to novel input signals and networks of neurons. In this blog post we will look at a simpler class of neuron firing model." />
-<link rel="canonical" href="https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html" />
-<meta property="og:url" content="https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html" />
+<link rel="canonical" href="https://www.lewiscoleblog.com/biology/non-linear-dynamics/neuron/exponential-integrate-and-fire/2020/01/14/Neuron-Models-2.html" />
+<meta property="og:url" content="https://www.lewiscoleblog.com/biology/non-linear-dynamics/neuron/exponential-integrate-and-fire/2020/01/14/Neuron-Models-2.html" />
 <meta property="og:site_name" content="Lewis Cole Blog" />
+<meta property="og:image" content="https://github.com/lewiscoleblog/blog/raw/master/images/neuron/trajectory.png" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-01-14T00:00:00-06:00" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"Following on from my previous blog post on neuron firing models we will move onto investigating other types of firing model. Previously we looked at the Hodgkin-Huxley model, this consisted of a system of 4 interacting PDEs to model each neuron. This makes studying the dynamics mathematically very tricky, especially if we want to consider responses to novel input signals and networks of neurons. In this blog post we will look at a simpler class of neuron firing model.","@type":"BlogPosting","headline":"Neuron Models 2: Exponential Integrate and Fire Model","dateModified":"2020-01-14T00:00:00-06:00","datePublished":"2020-01-14T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html"},"url":"https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"Following on from my previous blog post on neuron firing models we will move onto investigating other types of firing model. Previously we looked at the Hodgkin-Huxley model, this consisted of a system of 4 interacting PDEs to model each neuron. This makes studying the dynamics mathematically very tricky, especially if we want to consider responses to novel input signals and networks of neurons. In this blog post we will look at a simpler class of neuron firing model.","@type":"BlogPosting","headline":"Neuron Models 2: Exponential Integrate and Fire Model","dateModified":"2020-01-14T00:00:00-06:00","datePublished":"2020-01-14T00:00:00-06:00","image":"https://github.com/lewiscoleblog/blog/raw/master/images/neuron/trajectory.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/biology/non-linear-dynamics/neuron/exponential-integrate-and-fire/2020/01/14/Neuron-Models-2.html"},"url":"https://www.lewiscoleblog.com/biology/non-linear-dynamics/neuron/exponential-integrate-and-fire/2020/01/14/Neuron-Models-2.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://www.lewiscoleblog.com/feed.xml" title="Lewis Cole Blog" /><link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
 <title>Neuron Models 2: Exponential Integrate and Fire Model | Lewis Cole Blog</title>
@@ -26,13 +27,14 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Following on from my previous blog post on neuron firing models we will move onto investigating other types of firing model. Previously we looked at the Hodgkin-Huxley model, this consisted of a system of 4 interacting PDEs to model each neuron. This makes studying the dynamics mathematically very tricky, especially if we want to consider responses to novel input signals and networks of neurons. In this blog post we will look at a simpler class of neuron firing model." />
 <meta property="og:description" content="Following on from my previous blog post on neuron firing models we will move onto investigating other types of firing model. Previously we looked at the Hodgkin-Huxley model, this consisted of a system of 4 interacting PDEs to model each neuron. This makes studying the dynamics mathematically very tricky, especially if we want to consider responses to novel input signals and networks of neurons. In this blog post we will look at a simpler class of neuron firing model." />
-<link rel="canonical" href="https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html" />
-<meta property="og:url" content="https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html" />
+<link rel="canonical" href="https://www.lewiscoleblog.com/biology/non-linear-dynamics/neuron/exponential-integrate-and-fire/2020/01/14/Neuron-Models-2.html" />
+<meta property="og:url" content="https://www.lewiscoleblog.com/biology/non-linear-dynamics/neuron/exponential-integrate-and-fire/2020/01/14/Neuron-Models-2.html" />
 <meta property="og:site_name" content="Lewis Cole Blog" />
+<meta property="og:image" content="https://github.com/lewiscoleblog/blog/raw/master/images/neuron/trajectory.png" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-01-14T00:00:00-06:00" />
 <script type="application/ld+json">
-{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"Following on from my previous blog post on neuron firing models we will move onto investigating other types of firing model. Previously we looked at the Hodgkin-Huxley model, this consisted of a system of 4 interacting PDEs to model each neuron. This makes studying the dynamics mathematically very tricky, especially if we want to consider responses to novel input signals and networks of neurons. In this blog post we will look at a simpler class of neuron firing model.","@type":"BlogPosting","headline":"Neuron Models 2: Exponential Integrate and Fire Model","dateModified":"2020-01-14T00:00:00-06:00","datePublished":"2020-01-14T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html"},"url":"https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html","@context":"https://schema.org"}</script>
+{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"Following on from my previous blog post on neuron firing models we will move onto investigating other types of firing model. Previously we looked at the Hodgkin-Huxley model, this consisted of a system of 4 interacting PDEs to model each neuron. This makes studying the dynamics mathematically very tricky, especially if we want to consider responses to novel input signals and networks of neurons. In this blog post we will look at a simpler class of neuron firing model.","@type":"BlogPosting","headline":"Neuron Models 2: Exponential Integrate and Fire Model","dateModified":"2020-01-14T00:00:00-06:00","datePublished":"2020-01-14T00:00:00-06:00","image":"https://github.com/lewiscoleblog/blog/raw/master/images/neuron/trajectory.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/biology/non-linear-dynamics/neuron/exponential-integrate-and-fire/2020/01/14/Neuron-Models-2.html"},"url":"https://www.lewiscoleblog.com/biology/non-linear-dynamics/neuron/exponential-integrate-and-fire/2020/01/14/Neuron-Models-2.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
 <link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
@@ -122,13 +124,13 @@ window.onload = wrap_img;
         <a class="category-tags-link" href="/categories/#biology">biology</a>
         &nbsp;
       
-        <a class="category-tags-link" href="/categories/#computational-statistics">computational-statistics</a>
-        &nbsp;
-      
         <a class="category-tags-link" href="/categories/#non-linear-dynamics">non-linear-dynamics</a>
         &nbsp;
       
         <a class="category-tags-link" href="/categories/#neuron">neuron</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#exponential-integrate-and-fire">exponential-integrate-and-fire</a>
         
       
       </p>
@@ -340,7 +342,7 @@ $$\tau \frac{dV_m}{dt} = (V_L - V_m) + \Delta_T e^{\left( \frac{V_m - V_T}{\Delt
 
 
 
-  </div><a class="u-url" href="/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/14/Neuron-Models-2.html" hidden></a>
+  </div><a class="u-url" href="/biology/non-linear-dynamics/neuron/exponential-integrate-and-fire/2020/01/14/Neuron-Models-2.html" hidden></a>
 </article>
 
       </div>
