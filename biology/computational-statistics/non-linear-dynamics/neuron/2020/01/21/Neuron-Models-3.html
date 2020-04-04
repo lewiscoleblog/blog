@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Neuron Models 3: Ensembles | Lewis Cole Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Neuron Models 3: Ensembles" />
+<meta name="author" content="Lewis Cole (2020)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Following on from my previous blog post on the exponential integrate and fire neuron model we will work to create a probabilistic view of the model. We present a numerical scheme to approximate this" />
+<meta property="og:description" content="Following on from my previous blog post on the exponential integrate and fire neuron model we will work to create a probabilistic view of the model. We present a numerical scheme to approximate this" />
+<link rel="canonical" href="https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/21/Neuron-Models-3.html" />
+<meta property="og:url" content="https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/21/Neuron-Models-3.html" />
+<meta property="og:site_name" content="Lewis Cole Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-01-21T00:00:00-06:00" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"Following on from my previous blog post on the exponential integrate and fire neuron model we will work to create a probabilistic view of the model. We present a numerical scheme to approximate this","@type":"BlogPosting","headline":"Neuron Models 3: Ensembles","dateModified":"2020-01-21T00:00:00-06:00","datePublished":"2020-01-21T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/21/Neuron-Models-3.html"},"url":"https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/21/Neuron-Models-3.html","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://www.lewiscoleblog.com/feed.xml" title="Lewis Cole Blog" /><link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Neuron Models 3: Ensembles | Lewis Cole Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Neuron Models 3: Ensembles" />
+<meta name="author" content="Lewis Cole (2020)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Following on from my previous blog post on the exponential integrate and fire neuron model we will work to create a probabilistic view of the model. We present a numerical scheme to approximate this" />
+<meta property="og:description" content="Following on from my previous blog post on the exponential integrate and fire neuron model we will work to create a probabilistic view of the model. We present a numerical scheme to approximate this" />
+<link rel="canonical" href="https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/21/Neuron-Models-3.html" />
+<meta property="og:url" content="https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/21/Neuron-Models-3.html" />
+<meta property="og:site_name" content="Lewis Cole Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-01-21T00:00:00-06:00" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"Following on from my previous blog post on the exponential integrate and fire neuron model we will work to create a probabilistic view of the model. We present a numerical scheme to approximate this","@type":"BlogPosting","headline":"Neuron Models 3: Ensembles","dateModified":"2020-01-21T00:00:00-06:00","datePublished":"2020-01-21T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/21/Neuron-Models-3.html"},"url":"https://www.lewiscoleblog.com/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/21/Neuron-Models-3.html","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://www.lewiscoleblog.com/feed.xml" title="Lewis Cole Blog" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Lewis Cole Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a><a class="page-link" href="/search/">Search</a><a class="page-link" href="/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Neuron Models 3: Ensembles</h1><p class="page-description">Following on from my previous blog post on the exponential integrate and fire neuron model we will work to create a probabilistic view of the model. We present a numerical scheme to approximate this</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-01-21T00:00:00-06:00" itemprop="datePublished">
+        Jan 21, 2020
+      </time>• 
+          <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name">Lewis Cole (2020)</span></span>
+        <!-- • <span class="read-time" title="Estimated read time">
+    
+    
+      9 min read
+    
+</span>-->
+    </p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/categories/#biology">biology</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#computational-statistics">computational-statistics</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#non-linear-dynamics">non-linear-dynamics</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#neuron">neuron</a>
+        
+      
+      </p>
+    
+
+    
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Justifying-Gaussian-White-Noise">Justifying Gaussian White Noise </a></li>
+<li class="toc-entry toc-h2"><a href="#Fokker-Planck">Fokker-Planck </a></li>
+<li class="toc-entry toc-h2"><a href="#Numerical-Integration">Numerical Integration </a></li>
+<li class="toc-entry toc-h2"><a href="#Conclusion">Conclusion </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#References">References </a></li>
+</ul>
+</li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-01-21-Neuron-Models-3.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Justifying-Gaussian-White-Noise">
+<a class="anchor" href="#Justifying-Gaussian-White-Noise" aria-hidden="true"><span class="octicon octicon-link"></span></a>Justifying Gaussian White Noise<a class="anchor-link" href="#Justifying-Gaussian-White-Noise"> </a>
+</h2>
+<p>We first begin with a small diversion, in the previous HH and EIF neuron firing examples we have assumed some sort of Gaussian white noise as an input signal. We briefly mentioned that this is a reasonable assumption but we will justify this in a bit more detail here. First we note that each neuron will typically take input signal from the order of 10,000 neurons. As such even in a low firing rate scheme a neuron will likely receive relatively large amount of input spikes. We can express this signal as: <br>
+
+$$I_p(t) = \sum^{N}_{i=0} J_{i} \sum_k \delta(t-t_i^k)$$
+
+Where: <br>
+$N$ is the number of connected neurons <br>
+$J_{i}$ is the synaptic connection strength from neuron $i$ <br>
+$t_i^k$ is the time of the kth spike recieved from neuron i</p>
+<p>If we assume that these spikes arrive in an uncorrelated, memoryless fashion in the form of a Poisson process and that the connection strengths are suitably small: $\langle J_i \rangle \ll V_{Th} - V_{Re}$ (where angle brackets denote population average). Then we can apply a diffusion approximation:
+
+$$I_p(t) = \sum^{N}_{i=0} J_{i} \sum_k \delta(t-t_i^k) \approx \mu + \sigma \xi(t)$$
+
+Where: <br>
+$\mu = \langle J_i \rangle N \nu $ <br>
+$\sigma = \langle J_i^2 \rangle N \nu $ <br>
+$\nu$ is the mean firing rate over all connected neurons <br>
+$\xi(t)$ is a Gaussian white noise process</p>
+<p>Of course as with all approximations this is subject to "small sample size" and $N$ needs to be suitably large.</p>
+<h2 id="Fokker-Planck">
+<a class="anchor" href="#Fokker-Planck" aria-hidden="true"><span class="octicon octicon-link"></span></a>Fokker-Planck<a class="anchor-link" href="#Fokker-Planck"> </a>
+</h2>
+<p>Recall that we specified the EIF model with Gaussian white noise as having dynamics:
+
+$$\tau \frac{dV_m}{dt} = (V_L - V_m) + \Delta_T e^{\left( \frac{V_m - V_T}{\Delta_T} \right)} + \sigma \sqrt{2 \tau}\xi_t $$
+</p>
+<p>This is nothing more than an Ito process of the form:
+
+$$dX_t = \mu(X_t,t)dt + \sigma(X_t, t)dW_t $$
+
+With standard Wiener process $W_t$. The Fokker-Planck equation gives us a probability distribution of this process $p(x,t)$ through the PDE:
+
+$$\frac{\partial}{\partial t} p(x,t) = -\frac{\partial}{\partial x}\left[\mu(x,t)p(x,t)\right] + \frac{\partial^2}{\partial x^2}\left[\frac{1}{2}\sigma^2(x,t)p(x,t)\right]  $$
+
+This formula can also be extended to higher dimensions in an obvious way. The derivation of this formula is fairly involved so not included in this blog post, most good textbooks on stochastic analysis should have a derivation for the interested reader.</p>
+<p>In the case of the EIF model we can thus write down:
+
+$$ \frac{\partial p}{\partial t} = \frac{\sigma^2}{\tau}\frac{\partial^2p}{\partial V_m^2} + \frac{\partial}{\partial V_m} \left[ \frac{(V_m - V_L - \psi(V_m) )}{\tau} p(V_m,t) \right] $$
+
+With $\psi(V_m)$ represnting the exponential firing term.</p>
+<p>By the continuity equation we can write:
+
+$$ \frac{\partial p}{\partial t} = - \frac{\partial J}{\partial V_m} $$
+</p>
+<p>Where $J$ represents the flux. By using this relation in the Fokker-Planck equation and integrating over voltage we get:
+
+$$ J(V_m, t) = - \frac{\sigma^2}{\tau}\frac{\partial p}{\partial V_m} - \frac{(V_m - V_L - \psi(V_m) )}{\tau} p(V_m,t) $$
+</p>
+<p>We can also note that:
+
+$$J(V_{Re}^+,t) = J(V_{Re}^-, t) + r(t)$$
+</p>
+<p>Where $V_{Re}^\pm$ represents the limit from above (+) or below (-) the reset voltage. the function $r(t)$ represents the average neuron firing rate. This is due to the implementaion of the voltage reset mechanism post spike. We can also note that for $V_m &lt; V_{Re}$ we have $J(V_m, t) = 0$ and for $V_m &gt; V_{Re}$ we have $J(V_m, t) = - r(t)$. We can then solve the flux equation to give:
+
+$$P(V_m, t) = \frac{r(t)\tau}{\sigma^2} \int_{max(V_m,V_{Re})}^{V_{Th}} exp \left( -\sigma^2 \int_{V_m}^u (x - V_L - \psi(x) )dx \right)du $$
+</p>
+<p>Since the probability measure needs to integrate to 1, we can then write:
+
+$$r(t) = \left( \frac{\tau}{\sigma^2} \int_{-\infty}^{V_{Th}} \left( \int_{max(V_m,V_{Re})}^{V_{Th}} exp \left( -\sigma^2 \int_{V_m}^u (x - V_L - \psi(x) )dx \right)du \right) dV_m \right)^{-1} $$
+</p>
+<p>(Note under the scheme presented there is no time dependence to any of these equations. Under time dependent signals we would have to be more careful and typically further approximations are made.)</p>
+<p>So far we have not allowed for the refractory period, we have assumed that after reset the voltage trajectories continue as normal. Given we have chosen a deterministic refractory period we can just add this to the euqation above:
+
+$$r_{ref}(t) = \left( \frac{\tau}{\sigma^2} \int_{-\infty}^{V_{Th}} \left( \int_{max(V_m,V_{Re})}^{V_{Th}} exp \left( -\sigma^2 \int_{V_m}^u (x - V_L - \psi(x) )dx \right)du \right) dV_m + T_{Ref} \right)^{-1} $$
+</p>
+<p>We can see that this integral will not give rise to an analytic solution in the case of EIF neurons. The forward Euler scheme we relied upon in the past will not perform well here. Instead we will use a slightly different numerical scheme.</p>
+<h2 id="Numerical-Integration">
+<a class="anchor" href="#Numerical-Integration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Numerical Integration<a class="anchor-link" href="#Numerical-Integration"> </a>
+</h2>
+<p>(This is taken from Richardson [2007] - see references for further details) <br>
+Presented now is a numerical scheme for calculating the firing rate. Recall from above:
+
+$$ J(V_m, t) = - r(t) \Theta(V - V_{Re}) = - \frac{\sigma^2}{\tau}\frac{\partial p}{\partial V_m} - \frac{(V_m - V_L - \psi(V_m) )}{\tau} p(V_m,t) $$
+</p>
+<p>Where $\Theta(V)$ is the Heaviside step-function. Re-arranged this gives:
+
+$$- \frac{\partial p}{\partial V_m} = - \frac {\tau}{\sigma^2} r(t) \Theta(V - V_{Re}) + \sigma^{-2}(V_m - V_L - \psi(V_m)) p(V_m,t) $$
+</p>
+<p>Which is of the form:
+
+$$ \frac{\partial p}{\partial V_m} = G(V_m)p(V_m) + H(V_m) $$
+</p>
+<p>By applying a voltage discretization scheme: $V_k = V_{Lb} + k \Delta_V $ with $V_n = V_{Th}$ we can write down:
+
+$$ p(V_{k-1}) = p(V_k) e^{\int^{V_k}_{V_{k-1}} G(V)dV} + \int^{V_k}_{V_{k-1}} H(V) e^{\int^V_{V_{k-1}}G(U)dU} $$
+</p>
+<p>We can approximate this as:
+
+$$ p(V_{k-1}) = p(V_k) e^{\Delta_V G(V_k)} + \Delta_V H(V_k) \left( \frac{e^{\Delta_V G(V_k)} - 1}{\Delta_V G(V_k)} \right) $$
+</p>
+<p>Substituting back in the necessary formulae for $G$ and $H$ gives:
+
+$$ p(V_{k-1}) = p(V_k) e^{\Delta_V  \sigma^{-2}(V_k - V_L - \psi(V_k)) } + \Delta_V \frac{\tau}{\sigma^2}r(t)  \Theta(V_k - V_{Re})\left( \frac{e^{\Delta_V   \sigma^{-2}(V_k - V_L - \psi(V_k))} - 1}{\Delta_V  \sigma^{-2}(V_k - V_L - \psi(V_k))} \right)   $$
+</p>
+<p>However this still has unknown $r(t)$ in it. If we apply a transform: $q(V,t) = \frac{p(V,t)}{r(t)}$ then: $\sum q(V_k) = (r(t))^{-1}$ and:
+
+$$ q(V_{k-1}) = q(V_k) e^{\Delta_V  \sigma^{-2}(V_k - V_L - \psi(V_k)) } + \Delta_V \frac{\tau}{\sigma^2} \Theta(V_k - V_{Re})\left( \frac{e^{\Delta_V   \sigma^{-2}(V_k - V_L - \psi(V_k))} - 1}{\Delta_V  \sigma^{-2}(V_k - V_L - \psi(V_k))} \right)$$
+</p>
+<p>To simplify this expression we define functions $A$ and $B$ so that:
+
+$$ q(V_{k-1}) = q(V_k) A(V_k) + \Theta(V_k - V_{Re}) B(V_k) $$
+</p>
+<p>And so we can calculate the firing rate. This scheme has a much better performance than an Euler scheme. We instantiate the scheme with $q(V_n) = 0$, we also select a value $V_{Lb}$ as a cut-off to stop iterating. An implementation of this method can be seen below:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Evaluating the solution to the Fokker-Planck Equation to calculate the firing rate of an EIF neuron subject to Gaussian white noise</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Set model parameters</span>
+<span class="c1"># Membrane time constant tau (ms) and leak reversal potential VL (mV)</span>
+<span class="n">tau</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">VL</span> <span class="o">=</span> <span class="o">-</span><span class="mi">70</span>
+
+<span class="c1"># Spike sharpness DelT (mV) and exponential potential threshold VT (mV)</span>
+<span class="n">DelT</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">VT</span> <span class="o">=</span> <span class="o">-</span><span class="mi">60</span>
+
+<span class="c1"># Variation in gaussian noise sig</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="mi">25</span>
+
+<span class="c1"># Set voltage spike threshold Vth (mV), reset voltage Vr (mV) and refractory period Tref (ms)</span>
+<span class="n">Vth</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">Vr</span> <span class="o">=</span> <span class="o">-</span><span class="mi">70</span>
+<span class="n">Tref</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># Set up additional parameters for solving Fokker-Planck. DelV (mV) and VLb (mV)</span>
+<span class="n">DelV</span> <span class="o">=</span> <span class="mf">0.001</span>
+<span class="n">VLb</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span>
+<span class="n">Steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">((</span><span class="n">Vth</span> <span class="o">-</span> <span class="n">VLb</span><span class="p">)</span> <span class="o">/</span> <span class="n">DelV</span><span class="p">))</span>
+<span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">Steps</span><span class="p">)</span>
+<span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">Steps</span><span class="p">)</span><span class="o">*</span><span class="n">DelV</span> <span class="o">+</span> <span class="n">VLb</span>
+
+<span class="c1"># For ease define function psi</span>
+<span class="k">def</span> <span class="nf">psi</span><span class="p">(</span><span class="n">V</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">DelT</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="n">V</span> <span class="o">-</span> <span class="n">VT</span><span class="p">)</span> <span class="o">/</span> <span class="n">DelT</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">A</span><span class="p">(</span><span class="n">V</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">DelV</span> <span class="o">*</span> <span class="n">sig</span><span class="o">**-</span><span class="mi">2</span> <span class="o">*</span><span class="p">(</span><span class="n">V</span> <span class="o">-</span> <span class="n">VL</span> <span class="o">-</span> <span class="n">psi</span><span class="p">(</span><span class="n">V</span><span class="p">)))</span>
+
+<span class="k">def</span> <span class="nf">B</span><span class="p">(</span><span class="n">V</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">A</span><span class="p">(</span><span class="n">V</span><span class="p">)</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">DelV</span> <span class="o">*</span> <span class="n">tau</span> <span class="o">*</span> <span class="n">sig</span><span class="o">**-</span><span class="mi">2</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">DelV</span> <span class="o">*</span> <span class="n">tau</span> <span class="o">*</span> <span class="n">sig</span><span class="o">**-</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">A</span><span class="p">(</span><span class="n">V</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">A</span><span class="p">(</span><span class="n">V</span><span class="p">))</span>
+
+<span class="c1"># Shut off numpy divide errors</span>
+<span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">'ignore'</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Steps</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">Vr</span><span class="p">:</span>
+        <span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">A</span><span class="p">(</span><span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="n">B</span><span class="p">(</span><span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">A</span><span class="p">(</span><span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="mi">1000000</span> <span class="o">+</span> <span class="n">Tref</span><span class="o">/</span><span class="mi">1000</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Firing rate:"</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="s2">"Hz"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Firing rate: 21.6 Hz
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can modify the previous EIF firing code to estimate the firing rate, the results should be similar (note: for this I used 10m time steps, it is a slow running code!):</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p></p>
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#collapse</span>
+<span class="c1"># Implementation of a noisy EIF neuron using a forward Euler scheme</span>
+<span class="c1"># Reduce N for quicker running code</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Set seed for repeatability</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+
+<span class="c1"># Set time step dt (ms) and number of steps N</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">0.001</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">10000000</span>
+
+<span class="c1"># Set model parameters</span>
+<span class="c1"># Membrane time constant tau (ms) and leak reversal potential VL (mV)</span>
+<span class="n">tau</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">VL</span> <span class="o">=</span> <span class="o">-</span><span class="mi">70</span>
+
+<span class="c1"># Spike sharpness DelT (mV) and exponential potential threshold VT (mV)</span>
+<span class="n">DelT</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">VT</span> <span class="o">=</span> <span class="o">-</span><span class="mi">60</span>
+
+<span class="c1"># Variation in gaussian noise sig</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="mi">25</span>
+
+<span class="c1"># Set voltage spike threshold Vth (mV), reset voltage Vr (mV) and refractory period Tref (ms)</span>
+<span class="n">Vth</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">Vr</span> <span class="o">=</span> <span class="o">-</span><span class="mi">70</span>
+<span class="n">Tref</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># Set up voltage Vold (mV) and spike count Sp</span>
+<span class="n">Vold</span> <span class="o">=</span> <span class="n">Vr</span>
+<span class="n">Sp</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># Set up refractory period counter Tc (ms)</span>
+<span class="n">Tc</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">Tc</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">Vnew</span> <span class="o">=</span> <span class="n">Vr</span>
+        <span class="n">Tc</span> <span class="o">-=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>    
+        <span class="n">Vtemp</span> <span class="o">=</span> <span class="n">Vold</span> <span class="o">+</span> <span class="n">dt</span><span class="o">/</span><span class="n">tau</span><span class="o">*</span><span class="p">(</span><span class="n">VL</span> <span class="o">-</span> <span class="n">Vold</span><span class="p">)</span> <span class="o">+</span> <span class="n">DelT</span><span class="o">*</span><span class="n">dt</span><span class="o">/</span><span class="n">tau</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="n">Vold</span> <span class="o">-</span> <span class="n">VT</span><span class="p">)</span><span class="o">/</span><span class="n">DelT</span><span class="p">)</span> <span class="o">+</span> <span class="n">sig</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dt</span><span class="o">/</span><span class="n">tau</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Vtemp</span> <span class="o">&gt;</span> <span class="n">Vth</span><span class="p">:</span>
+            <span class="n">Vnew</span> <span class="o">=</span> <span class="n">Vr</span>
+            <span class="n">Tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">Tref</span><span class="o">/</span><span class="n">dt</span><span class="p">)</span>
+            <span class="n">Sp</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Vnew</span> <span class="o">=</span> <span class="n">Vtemp</span>
+    <span class="n">Vold</span> <span class="o">=</span> <span class="n">Vnew</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Estimated firing rate:"</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">Sp</span><span class="o">/</span><span class="p">(</span><span class="n">N</span><span class="o">*</span><span class="n">dt</span><span class="o">/</span><span class="mi">1000</span><span class="p">),</span><span class="mi">1</span><span class="p">),</span> <span class="s2">"Hz"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+    </details>
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Estimated firing rate: 20.2 Hz
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Which we can see is similar to the solution of the Fokker-Planck equation. In the limit $N \to \infty$ and decreasing the lattice sizes these approximations should become much closer.</p>
+<h2 id="Conclusion">
+<a class="anchor" href="#Conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion<a class="anchor-link" href="#Conclusion"> </a>
+</h2>
+<p>We have seen that by using the Fokker-Planck framework we are able to calculate the mean firing rate of the EIF neuron. We can also notice that the numerical scheme to integrate the Fokker-Planck runs significantly faster than taking a Monte-Carlo approximation by simulating the EIF directly. We can also notice that the Fokker-Planck framework is easy to extend (e.g. to modulated noise or other applied signals) and further we can extend this to allow for connected networks of neurons (I may write an additional blog post on this in the future but will likely end up being quite similar to this one).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="References">
+<a class="anchor" href="#References" aria-hidden="true"><span class="octicon octicon-link"></span></a>References<a class="anchor-link" href="#References"> </a>
+</h3>
+<ul>
+<li>
+<a href="https://neuronaldynamics.epfl.ch/online/Ch13.html">https://neuronaldynamics.epfl.ch/online/Ch13.html</a> - Online Neuronal Dynamics Textbook by Wulfram Gerstner, Werner M. Kistler, Richard Naud and Liam Paninski</li>
+<li>How Spike Generation Mechanisms Determine the Neuronal Response to Fluctuating Inputs - Nicolas Fourcaud-Trocme´, David Hansel, Carl van Vreeswijk, and Nicolas Brunel [2003]</li>
+<li>Firing-rate response of linear and nonlinear integrate-and-fire neurons to modulated current-based and conductance-based synaptic drive - Magnus J Richardson [2007]</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><a class="u-url" href="/biology/computational-statistics/non-linear-dynamics/neuron/2020/01/21/Neuron-Models-3.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>A blog about maths, probability, modelling and computing.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/lewiscoleblog" title="lewiscoleblog"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/jazzcoffeestuff" title="jazzcoffeestuff"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
