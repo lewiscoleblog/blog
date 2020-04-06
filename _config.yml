@@ -73,7 +73,7 @@ default_badges:
   colab: false
 
 # This specifies link form for posts
-permalink: slug
+permalink: /:slug
 
 # Everything below here should be left alone. Modifications may break fastpages
 future: true
