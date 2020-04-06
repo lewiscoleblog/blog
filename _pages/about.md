@@ -4,7 +4,7 @@ title: Welcome
 permalink: /welcome/
 ---
 
-![](https://github.com/lewiscoleblog/blog/raw/master/images/big_logo.jpg)
+![](https://github.com/lewiscoleblog/blog/raw/master/images/big_logo.png)
 Lewis Cole 2020
 
 Hello, and welcome to my little corner of the internet. I have never written a blog before and so this is likely to be a bit of a work in progress slowly evolving through time. 
