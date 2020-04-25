@@ -113,7 +113,7 @@ window.onload = wrap_img;
        <!-- • <span class="read-time" title="Estimated read time">
     
     
-      16 min read
+      19 min read
     
 </span>-->
     </p>
@@ -249,8 +249,228 @@ With $Q(J_{xy})$ representing the density by which the interaction strength is c
 <h2 id="Simulation">
 <a class="anchor" href="#Simulation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Simulation<a class="anchor-link" href="#Simulation"> </a>
 </h2>
-<p>After all the text we will now look at a simple simulation of this model. For now we will do this in a naïve way. In practice you wouldn't want to use this method, it will be very very inefficient and will be highly likely to get stuck in local minima and will struggle to find a global minima from all starting points (particularly at lower temperatures). In a future post we will look at some better methods for simulation that will improve performance.</p>
-<p>Given a configuration of spins we will perform an update step by picking a site at random, we will compute the probability of flipping the spin and then accept/reject this change based on a random draw. This process will be repeated for a set number of steps - we could enforce a stopping criteria (e.g. stop if the energy remains constant for some number of updates) however given the inefficiency of this method we will not bother. We will keep track of the energy of the system (the Hamiltonian) and the overall magnetism ($\sum_x \sigma_x$).</p>
+<p>After all the theory we will now look at a simple simulation of this model.</p>
+<p>We start by doing a very naive Monte-Carlo method - we will generate random configurations, calculate the energy and a Gibbs measure. With the results we will estimate the average energy, the average magnetism, ground state energy and the partition function. If we want to find the ground state this would be a very bad method, for an $N$ size spin glass there will be $2^N$ possible configurations so finding any one will be difficult! We can implement this:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># An implementation of a Sherrington-Kirkpatrick spin-glass of size N</span>
+<span class="c1"># Connectivity is initialized as a Gaussian distribution N(0, s^2/N)</span>
+<span class="c1"># Very naive Monte-Carlo approach</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="c1"># Fix random seed</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+
+<span class="c1"># Set size of model N</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">1000</span>
+
+<span class="c1"># Fix number of timesteps and some containers</span>
+<span class="n">timesteps</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">gibbs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">timesteps</span><span class="p">)</span>
+<span class="n">energy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">timesteps</span><span class="p">)</span>
+<span class="n">mag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">timesteps</span><span class="p">)</span>
+
+<span class="c1"># Initialize interaction array</span>
+<span class="n">s</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">interaction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+        <span class="n">interaction</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span> <span class="o">*</span> <span class="n">s</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+        <span class="n">interaction</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">interaction</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+<span class="c1"># Fix Temperature for Gibbs distribution</span>
+<span class="n">beta</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">s</span><span class="o">*</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">timesteps</span><span class="p">):</span>
+    <span class="n">configuration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">N</span><span class="p">)</span>
+    <span class="n">energy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">interaction</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">gibbs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">beta</span><span class="o">*</span><span class="n">energy</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">mag</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Estimated Ground State Energy: "</span><span class="p">,</span> <span class="n">energy</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Estimated Average Energy:"</span><span class="p">,</span> <span class="n">energy</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Estimated Partition Function:"</span><span class="p">,</span> <span class="n">gibbs</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Estimated Average Magnetism:"</span><span class="p">,</span> <span class="n">mag</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Estimated Ground State Energy:  -78.55263447711921
+Estimated Average Energy: 0.1314391563670086
+Estimated Partition Function: 1.7717002620362574e+64
+Estimated Average Magnetism: 0.5468
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Next we take another bad method: a greedy hill climber (or greedy gradient descent). The idea behind this algorithm is that when we are in one configuration we pick a site at random and look at the change in energy associated with flipping the spin. If the energy is lower we accept the change, if higher we ignore and pick another site at random. This algorithm will converge to some local minima but it will not necessarily be a good global minima. We can code this up as:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># An implementation of a Sherrington-Kirkpatrick spin-glass of size N</span>
+<span class="c1"># Connectivity is initialized as a Gaussian distribution N(0, s^2/N)</span>
+<span class="c1"># Greedy gradient descent</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="c1"># Fix random seed</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+
+<span class="c1"># Set size of model N and initial spins</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">spins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">N</span><span class="p">)</span>
+
+<span class="c1"># Fix number of timesteps and some containers</span>
+<span class="n">timesteps</span> <span class="o">=</span> <span class="mi">100000</span>
+<span class="n">mag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">timesteps</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">energy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">timesteps</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Initialize interaction array</span>
+<span class="n">s</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">interaction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+        <span class="n">interaction</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span> <span class="o">*</span> <span class="n">s</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+        <span class="n">interaction</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">interaction</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+<span class="c1"># Calculate initial values</span>
+<span class="n">mag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">spins</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">energy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="n">interaction</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
+
+<span class="c1"># Fix beta (inverse temerature) - from analysis we know that</span>
+<span class="c1"># system in glassy-phase for T&lt;s so beta&gt;1/s. Performance</span>
+<span class="c1"># of random updates isn't good so don't select temperature</span>
+<span class="c1"># too low</span>
+<span class="n">beta</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="n">s</span><span class="p">)</span>
+
+<span class="c1"># Define update step</span>
+<span class="n">dE</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">dM</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">s_array</span><span class="p">,</span> <span class="n">i_array</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    update function performs 1 update step to the model</span>
+<span class="sd">    </span>
+<span class="sd">    inputs:</span>
+<span class="sd">    s_array - an array of N spins (+-1)</span>
+<span class="sd">    i_array - an array of interaction strengths NxN</span>
+<span class="sd">    """</span>
+    <span class="k">global</span> <span class="n">dE</span>
+    <span class="k">global</span> <span class="n">dM</span>
+    
+    <span class="n">_N</span> <span class="o">=</span> <span class="n">s_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">old_s</span> <span class="o">=</span> <span class="n">s_array</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    
+    <span class="c1"># Select a spin to update</span>
+    <span class="n">site</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">_N</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="c1"># Get interaction vector</span>
+    <span class="n">i_vector</span> <span class="o">=</span> <span class="n">i_array</span><span class="p">[</span><span class="n">site</span><span class="p">,:]</span>
+    
+    <span class="c1"># Calculate energy change associated with flipping site spin</span>
+    <span class="n">dE</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">i_vector</span><span class="p">,</span> <span class="n">s_array</span><span class="p">)</span><span class="o">*</span><span class="n">s_array</span><span class="p">[</span><span class="n">site</span><span class="p">]</span>
+    <span class="n">dM</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">s_array</span><span class="p">[</span><span class="n">site</span><span class="p">]</span>
+        
+    <span class="c1"># Sample random number and update site</span>
+    <span class="k">if</span> <span class="n">dE</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">s_array</span><span class="p">[</span><span class="n">site</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dE</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">dM</span> <span class="o">=</span> <span class="mi">0</span>   
+    
+    <span class="k">return</span> <span class="n">s_array</span>
+
+<span class="k">def</span> <span class="nf">_main_loop</span><span class="p">(</span><span class="n">ts</span> <span class="p">,</span> <span class="n">s_array</span><span class="p">,</span> <span class="n">i_array</span><span class="p">):</span>
+    <span class="n">s_temp</span> <span class="o">=</span> <span class="n">s_array</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ts</span><span class="p">):</span>
+        <span class="n">update_step</span> <span class="o">=</span> <span class="n">update</span><span class="p">(</span><span class="n">s_temp</span><span class="p">,</span> <span class="n">i_array</span><span class="p">)</span>
+        <span class="n">s_temp</span> <span class="o">=</span> <span class="n">update_step</span>
+        <span class="n">energy</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">dE</span>
+        <span class="n">mag</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mag</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">dM</span>
+
+<span class="c1">#### Run Main Loop</span>
+<span class="n">_main_loop</span><span class="p">(</span><span class="n">timesteps</span><span class="p">,</span> <span class="n">spins</span><span class="p">,</span> <span class="n">interaction</span><span class="p">)</span>
+
+<span class="c1"># plot magnetism and energy evolving in time</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Time step"</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Magnetism"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mag</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'blue'</span><span class="p">)</span>
+
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Energy"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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%0A">
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can see after about 25,000 steps the system is "stuck" in a local energy minima. If we re-ran the code starting from a different spot we would likely end up in a vastly different configuration.</p>
+<p>The last method we will look at is the Metropolis-Hastings algorithm. Given a configuration of spins we will perform an update step by picking a site at random, we will compute the probability of flipping the spin and then accept/reject this change based on a random draw. This process will be repeated for a set number of steps. We will keep track of the energy of the system (the Hamiltonian) and the overall magnetism ($\sum_x \sigma_x$).</p>
 
 </div>
 </div>
@@ -326,7 +546,7 @@ With $Q(J_{xy})$ representing the density by which the interaction strength is c
     
     <span class="c1"># Calculate energy change associated with flipping site spin</span>
     <span class="n">dE</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">i_vector</span><span class="p">,</span> <span class="n">s_array</span><span class="p">)</span><span class="o">*</span><span class="n">s_array</span><span class="p">[</span><span class="n">site</span><span class="p">]</span>
-    <span class="n">dM</span> <span class="o">=</span> <span class="n">s_array</span><span class="p">[</span><span class="n">site</span><span class="p">]</span><span class="o">*-</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s_array</span><span class="p">[</span><span class="n">site</span><span class="p">]</span>
+    <span class="n">dM</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">s_array</span><span class="p">[</span><span class="n">site</span><span class="p">]</span>
     
     <span class="c1"># Calculate gibbs probability of flip</span>
     <span class="n">prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">beta</span><span class="o">*</span><span class="n">dE</span><span class="p">)</span>
@@ -390,8 +610,8 @@ With $Q(J_{xy})$ representing the density by which the interaction strength is c
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In this code we can see in the beginning the magnetism of the system fluctating and the energy decreasing. This stablises to some sort of "quasi-equilibrium" but even after 100k time steps the system has still not converged to an energy minima.</p>
-<p>Eventually the magnetism is fixed as the system has found an energy minimum. Since the energy always decreases it suggests the system is slowly finding its way to a local energy minimum rather than exploring to find a better energy minima. This is to be expected with such a basic implementation. To observe this better we will re-run the code for a second time from a different starting spot, we will compare the resulting spin array - we should notice that there is quite a large discrepency between the 2 runs - this shows that the system is settling down to a different local energy minima.</p>
+<p>In this code we can see in the beginning the magnetism of the system fluctating and the energy decreasing. This stablises to some sort of "quasi-equilibrium".</p>
+<p>Since the energy always decreases it suggests the system is slowly finding its way to a local energy minimum rather than exploring to find a better energy minima. This is to be expected with such a basic implementation. To observe this better we will re-run the code for a second time from a different starting spot, we will compare the resulting spin array - we should notice that there is quite a large discrepency between the 2 runs - this shows that the system is settling down to a different local energy minima.</p>
 
 </div>
 </div>
