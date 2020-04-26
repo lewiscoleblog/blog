@@ -113,7 +113,7 @@ window.onload = wrap_img;
        <!-- • <span class="read-time" title="Estimated read time">
     
     
-      27 min read
+      26 min read
     
 </span>-->
     </p>
@@ -191,7 +191,7 @@ window.onload = wrap_img;
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <hr>
-<p>This is the third blog post in a series - you can find the previous blog post <a href="https://lewiscoleblog.com/spin-glass-models-3">here</a></p>
+<p>This is the fourth blog post in a series - you can find the previous blog post <a href="https://lewiscoleblog.com/spin-glass-models-4">here</a></p>
 <hr>
 <h1 id="Setup">
 <a class="anchor" href="#Setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup<a class="anchor-link" href="#Setup"> </a>
@@ -260,7 +260,7 @@ $$ p_{flip} = min\left[1, exp(-\beta \Delta H) \right] $$
 
 $$ \Delta H = 2\sigma_{i,j} \sum_{(x,y) \in \langle i, j \rangle} J_{x,y} \sigma_{x,y} $$
 </p>
-<p>This introduces some efficiency in a code implementation since we do not have to calculate the energy of the whole configuration each time we want to update a site's spin. If we are particularly concerned with utmost performance we can also note that $exp(- \beta \Delta H)$ can only take a finite list of values and so a lookup table can be used to avoid a call to an exponential function (we will not implement this however since it is unnecessary for the purposes of this blog post).</p>
+<p>This introduces some efficiency in a code implementation since we do not have to calculate the energy of the whole configuration each time we want to update a site's spin.</p>
 <p>An example implementation of this can be seen below:</p>
 
 </div>
