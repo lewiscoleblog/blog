@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Spin Glass Models 5: Applications and Extensions | Lewis Cole Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Spin Glass Models 5: Applications and Extensions" />
+<meta name="author" content="Lewis Cole (2020)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this blog post we will look another look at spin-glasses, in particular we look at some of the areas where spin-glass conecepts have been used. We will look at generalizations and extensions of spin-glasses." />
+<meta property="og:description" content="In this blog post we will look another look at spin-glasses, in particular we look at some of the areas where spin-glass conecepts have been used. We will look at generalizations and extensions of spin-glasses." />
+<link rel="canonical" href="https://www.lewiscoleblog.com/spin-glass-models-5" />
+<meta property="og:url" content="https://www.lewiscoleblog.com/spin-glass-models-5" />
+<meta property="og:site_name" content="Lewis Cole Blog" />
+<meta property="og:image" content="https://github.com/lewiscoleblog/blog/raw/master/images/spin-glass/hopfield.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-03-31T00:00:00-05:00" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"In this blog post we will look another look at spin-glasses, in particular we look at some of the areas where spin-glass conecepts have been used. We will look at generalizations and extensions of spin-glasses.","@type":"BlogPosting","headline":"Spin Glass Models 5: Applications and Extensions","dateModified":"2020-03-31T00:00:00-05:00","datePublished":"2020-03-31T00:00:00-05:00","image":"https://github.com/lewiscoleblog/blog/raw/master/images/spin-glass/hopfield.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/spin-glass-models-5"},"url":"https://www.lewiscoleblog.com/spin-glass-models-5","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://www.lewiscoleblog.com/feed.xml" title="Lewis Cole Blog" /><link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Spin Glass Models 5: Applications and Extensions | Lewis Cole Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Spin Glass Models 5: Applications and Extensions" />
+<meta name="author" content="Lewis Cole (2020)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this blog post we will look another look at spin-glasses, in particular we look at some of the areas where spin-glass conecepts have been used. We will look at generalizations and extensions of spin-glasses." />
+<meta property="og:description" content="In this blog post we will look another look at spin-glasses, in particular we look at some of the areas where spin-glass conecepts have been used. We will look at generalizations and extensions of spin-glasses." />
+<link rel="canonical" href="https://www.lewiscoleblog.com/spin-glass-models-5" />
+<meta property="og:url" content="https://www.lewiscoleblog.com/spin-glass-models-5" />
+<meta property="og:site_name" content="Lewis Cole Blog" />
+<meta property="og:image" content="https://github.com/lewiscoleblog/blog/raw/master/images/spin-glass/hopfield.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-03-31T00:00:00-05:00" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"In this blog post we will look another look at spin-glasses, in particular we look at some of the areas where spin-glass conecepts have been used. We will look at generalizations and extensions of spin-glasses.","@type":"BlogPosting","headline":"Spin Glass Models 5: Applications and Extensions","dateModified":"2020-03-31T00:00:00-05:00","datePublished":"2020-03-31T00:00:00-05:00","image":"https://github.com/lewiscoleblog/blog/raw/master/images/spin-glass/hopfield.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/spin-glass-models-5"},"url":"https://www.lewiscoleblog.com/spin-glass-models-5","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://www.lewiscoleblog.com/feed.xml" title="Lewis Cole Blog" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Lewis Cole Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/welcome/">Welcome</a><a class="page-link" href="/search/">Search</a><a class="page-link" href="/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Spin Glass Models 5: Applications and Extensions</h1><p class="page-description">In this blog post we will look another look at spin-glasses, in particular we look at some of the areas where spin-glass conecepts have been used. We will look at generalizations and extensions of spin-glasses.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-03-31T00:00:00-05:00" itemprop="datePublished">
+        Mar 31, 2020
+      </time>• 
+          <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name">Lewis Cole (2020)</span></span>
+       <!-- • <span class="read-time" title="Estimated read time">
+    
+    
+      18 min read
+    
+</span>-->
+    </p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/categories/#Spin-Glass">Spin-Glass</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Magnet">Magnet</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Markov-Random-Field">Markov-Random-Field</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Hopfield-Network">Hopfield-Network</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Potts-Model">Potts-Model</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#NK-Model">NK-Model</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#NKCS-Model">NKCS-Model</a>
+        
+      
+      </p>
+    
+
+    
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Potts-Spin-Glass-Model">Potts Spin-Glass Model </a></li>
+<li class="toc-entry toc-h2"><a href="#Markov-Random-Field">Markov-Random-Field </a></li>
+<li class="toc-entry toc-h2"><a href="#Hopfield-Network">Hopfield Network </a></li>
+<li class="toc-entry toc-h2"><a href="#NK-Model">NK Model </a></li>
+<li class="toc-entry toc-h2"><a href="#Conclusion">Conclusion </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-03-31-Spin-Glass-Models-5.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<p>This is the fifth blog post in a series - you can find the previous blog post <a href="https://lewiscoleblog.com/spin-glass-models-4">here</a></p>
+<hr>
+<p>If you have read my previous few blog posts you will have some appreciation for spin-glasses and some models used to study and simulate them. In this blog post we will look a few applications and extensions of spin-glasses.</p>
+<h2 id="Potts-Spin-Glass-Model">
+<a class="anchor" href="#Potts-Spin-Glass-Model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Potts Spin-Glass Model<a class="anchor-link" href="#Potts-Spin-Glass-Model"> </a>
+</h2>
+<p>The Potts spin-glass model is a generalization of the Ising model we looked at previously. Whereas the Ising model allows only "up" or "down" spins the Potts model is a "q-spin" model where spins can take any of $q$ possible values. The Hamiltonian is typically specified as:
+
+$$H = - \sum_{x,y} J_{xy} \delta(\sigma_x \sigma_y) - \sum_x h_x \sigma_x $$
+
+Where $\delta(.)$ represents a Kronecker delta function. For $q=2$ this is equivalent to the Ising model.</p>
+<p>Another representation of a Potts model is the vector Potts model, here spins take values as defined as angles:
+
+$$ \theta_i = \frac{2 \pi i}{q} $$
+
+For $i$ between 1 and $q$. The Hamiltonian can then be defined as:
+
+$$H = - \sum_{x,y} J_{xy} cos(\sigma_x  - \sigma_y) - \sum_x h_x \sigma_x $$
+
+The case for $q \to \infty$ is called the XY-model.</p>
+<p>On a 2d square lattice we find that a phase transition exists for $q&gt;4$ for $q\leq 4$ there is a 2nd order phase transition (as with the Ising model $q=2$). The techniques and simulation procedures discussed previously can be adapted to the Potts model with minimal change.</p>
+<p>Other generalizations of this model have been used in various physical and biological applications. The Potts model has also been used in image processing.</p>
+<h2 id="Markov-Random-Field">
+<a class="anchor" href="#Markov-Random-Field" aria-hidden="true"><span class="octicon octicon-link"></span></a>Markov-Random-Field<a class="anchor-link" href="#Markov-Random-Field"> </a>
+</h2>
+<p>The Ising model can also be thought of as the simplest example of a Markov-Random-Field (MRF). The theory and application of these could easily take a blog post (or more) by itself. Instead we will just look at some basic definitions and the major theorems.</p>
+<p>A Markov-Random-Field is an example of a probabilistic graphical model (PGM). We define a MRF via a set of random variables and an undirected graph: $(X, G)$. Unlike other some other types of PGM an MRF graph is undirected and there is no requirement for the graph to be acyclic. For a given graph $G = (V,E)$ with specified vertices and edges, a set of random variables $(X_v)_{v \in V}$ forms a Markov-Random-Field over G if they satisfy the folowing properties:</p>
+<ol>
+<li>
+<strong>Pairwise Markov Property:</strong> any two non-adjacent variables are conditionally independent given all other variables:
+
+$$X_u \perp X_v | X_{V / \{u,v\}}$$
+</li>
+<li>
+<strong>Local Markov Property:</strong> A variable is conditionally independent of all other variables given its neighbors:
+
+$$X_u \perp X_{V /N(u)}  | X_{N(u)} $$
+
+Where $N(u)$ represents the set of neighbours of vertex $u$ according to $G=(V,E)$</li>
+<li>
+<strong>Global Markov Property:</strong>  Any two subsets of variables are conditionally independent given a separating subset:
+
+$$X_A \perp X_B  | X_S $$
+
+Where every path from a node in $A$ to a node in $B$ passes through $S$.</li>
+</ol>
+<p>One useful way of specifying the MRF is through the conecpt of clique potentials. A subgraph $C \subset G$ is a clique if it is a fully connected subgraph, the set of all cliques of $G$ is denoted: $Cl(G)$. We can then specify a joint distribution of random-variables $\mathbf{X} =  (X_v)_{v \in V}$ via clique potential functions: $\phi_C(X_C)$ such that:
+
+$$P(\mathbf{X} = \mathbf{x}) = \prod_{C \in Cl(G)} \phi_C (x_C) $$
+
+We note that every joint distribution specified in this was is a MRF. However the reverse is not necessarily true, we can however factorise a joint distribution this way if:</p>
+<ul>
+<li>The distribution is strictly positive (known as the Hammersley-Clifford theorem)</li>
+<li>The graph is chordal</li>
+</ul>
+<p>A convenient form of clique potential is the exponential form which we can denote as:
+
+$$ P(\mathbf{X} = \mathbf{x}) = \frac{1}{Z} exp\left(\sum_{C \in Cl(G)} w_C f_C(x_C)\right)$$
+
+With:
+
+$$ Z = \sum_{\mathbf{x}} exp\left(\sum_{C \in Cl(G)} w_C f_C(x_C)\right) $$
+
+Which is nothing more than a general form of the Gibbs distribution we looked at in previous blog posts. To see this for the Ising model the cliques are adjacent pairs of spins $C_{xy} = (\sigma_x, \sigma_y)$ with $f_{C_{xy}} = \sigma_x\sigma_y$ and $w_{C_{xy}} = - J_{xy}$ - this is the simplest form of a MRF. We can then extend some of the ideas and results we have looked at previously to a much larger class of probabilistic models.</p>
+<p>Markov random fields have been used in a variety of applications relating to computer vision and image/video processing including texture synthesis, compression, enhancement, etc. They have also been used in machine learning and computational biology. The ideas are also used in combinatorial optimization problems owing to their similarity to spin glasses.</p>
+<h2 id="Hopfield-Network">
+<a class="anchor" href="#Hopfield-Network" aria-hidden="true"><span class="octicon octicon-link"></span></a>Hopfield Network<a class="anchor-link" href="#Hopfield-Network"> </a>
+</h2>
+<p>We now look at a(n artificial) neural-network model developed by John Hopfield in 1982. This model is no longer particularly in favour as it doesn't have particularly strong performance but is interesting nonetheless. We will look at Hopfield networks as a mechanism for pattern storage and recall, they can be used in different applications. The model took spin glass models as a direct inspiration.</p>
+<p>A Hopfield network is a single layer recurrent network with a fully connected geometry, each neuron receives input from every other neuron and also gives output to every other neuron. We can specify the network through a weight matrix $(W_{ij})_{ij}$ which has the following properties:</p>
+<ul>
+<li>
+<strong>Symmetry:</strong> $W_{ij} = W_{ji} \; \; \; \forall i,j$</li>
+<li>
+<strong>No self-connectivity:</strong> $W_{ii} = 0 \; \; \; \forall i$</li>
+</ul>
+<p>The neurons themselves take discrete values of $\sigma_i \pm 1$ denoting "on" or "off" states. At each update step we define a quantity:
+
+$$ \theta_i = \sum_j W_{ij} \sigma_j + b_i$$
+
+Where $b_i$ is a bias term (we can take $b_i = 0$). If $\theta_i &gt; 0$ then we set $\sigma_i = 1$ and vice-versa. We can also note that this induces an energy function:
+
+$$ E = - \frac{1}{2}\sum_{ij} W_{ij} \sigma_i \sigma_j $$
+
+Which is exactly the Hamiltonian we investigated in our spin glass blog posts. We can see that the Hopfield Network is in fact nothing more than a Sherrington-Kirkpatrick spin glass viewed in a different way. From fairly basic arguments we can see that for each step of the dynamics described above the energy decreases.</p>
+<p>Now suppose we want the network to "remember" patterns, that is we want it to remember a certain "on-off" configuration of neurons. To do this we have to select the correct weight matrix. By noting that the dynamics suggest each step leads to an energy decrease we want our stored patterns to be local energy minima of the network. Suppose we want to store an $N$ bit pattern: $\hat{x} = \left( \hat{x}_1, \hat{x}_2, ... , \hat{x}_N \right)$ if we take: $W_{ij} = c \hat{x}_i\hat{x}_j$ for some constant $c&gt;0$ (representing the learning rate), then we have:
+
+$$ \theta_i = \sum_j W_{ij} \sigma_j = \sum_j c \hat{x}_i\hat{x}_j \sigma_j = c\sum_j \hat{x}_i = c(N-1)\hat{x}_i$$
+
+And so we have $\hat{x}$ forms a(n attractive) fixed point of the dynamics. Starting from a noisy input configuration eventually we should end up with the stored pattern.</p>
+<p>We can naturally extend this further if we want to store $P$ different patterns $\left(\hat{x}^p\right)_{p=1}^P$:
+
+$$W_{ij} = c \sum_p \hat{x}_i^p\hat{x}_j^p$$
+
+Typically we would take $c$ to scale with the number of patterns, such as: $c=\frac{1}{P}$.</p>
+<p>From basic arguments and intuition we can see that recall will deteriorate as we add more and more patterns. Can we construct an argument to find a "capacity" of the network? Yes! And it is quite simple. We start by re-writing the sum for $\theta_i(\hat{x}^p)$ (that is $\theta_i$ evaluated at one of the stored patterns $p$):
+
+$$\theta_i(\hat{x}^p) = \sum_j W_{ij} \hat{x}^p_j = \frac{1}{P} \sum_j\sum_q \hat{x}_i^q\hat{x}_j^q\hat{x}^p_j = \hat{x}_i^p +   \frac{1}{P} \sum_j\sum_{q \neq p} \hat{x}_i^q\hat{x}_j^q\hat{x}^p_j  $$
+
+Where the second term (the double summation) is referred to as the crosstalk term, if this is less than 1 then $\hat{x}^p$ is a fixed point and the network has "remembered" it. We can then define:
+
+$$ C_i^p = - \hat{x}_i^p \frac{1}{P} \sum_j\sum_{q \neq p} \hat{x}_i^q\hat{x}_j^q\hat{x}^p_j $$
+
+If $C_i^p&lt;0$ then $\hat{x}^p$ will be a fixed point. For $C_i^p&gt;1$ then there is instability. We want to find $P(C_i^p &gt; 1)$. By considering the limit of a large number of neurons and patterns we can consider the case of the terms $\hat{x}_i^q\hat{x}_j^q$ being uniformly random. By applying the central limit theorem we get: $C_i^p \sim N(0,\sigma^2)$ with $\sigma^2 =\frac{P}{N}$ - that is the ratio of the number of stored patterns over the number of neurons. For example if we have $\frac{P}{N} = 0.37$ then the probability of observing an error is around $5%$. From further analysis (not shown here) we can find that these errors can "add up", for stability we require: $\frac{P}{N} &lt; 0.138$. So for a $10x10$ neuron array we will only want to store 13 patterns or fewer.</p>
+<p>So far we have assumed that each pattern is treated equally by the network, we can remember some patterns "more strongly" by assigning them a multiplicity (essentially the number of times the pattern is "remembered"). With higher multiplicity the pattern will have a larger basin of attraction. However we have to consider the sum of multiplicities now as opposed to the number of unique patterns. For example for the $10x10$ neuron case, if we have a pattern with multiplicity $10$ then we can only store a maximum of 3 extra patterns (of multiplicity 1).</p>
+<p>So far the picture looks rosy with our Hopfield-Network, unfortunately there are a few issues that prevents them being widely used. Firstly we have the occurence of "spurious states" - these are non-remembered states that are attractors of the network dynamics. If we start near one of these spurious states the dynamics will converge towards them, which is obviously not ideal. These are due to the complex energy landscape of the Sherrington-Kirkpatrick spin-glass. One simple example of a spurious state would be any inverse image of a stored pattern (i.e. flipping +1 neuron activations to -1 and vice versa). There can be other spurious states however.</p>
+<p>We now present a basic implementation of a Hopfield network as an illustration. We will consider a $7x7$ neuron grid and aim to store $4$ patterns. We will "flatten" the neuron grid to a $49$ element single dimension array for convenience.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># A code implementing a Hopfield network</span>
+<span class="c1"># Storing a number of 2d images for recall</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Set random seed for reproducibility</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+
+<span class="n">num_patterns</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">grid_width</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="n">grid_height</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="n">grid_size</span> <span class="o">=</span> <span class="n">grid_width</span><span class="o">*</span><span class="n">grid_height</span>
+
+<span class="c1"># Fix stored patterns</span>
+<span class="n">stored</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_patterns</span><span class="p">,</span> <span class="n">grid_size</span><span class="p">))</span>
+
+<span class="n">stored</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="p">]</span>
+<span class="n">stored</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span> <span class="p">]</span>
+<span class="n">stored</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span> <span class="p">]</span>
+<span class="n">stored</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> \
+             <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="p">]</span>
+
+<span class="c1"># Display the patterns</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_patterns</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_patterns</span><span class="p">):</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">stored</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">grid_height</span><span class="p">,</span> <span class="n">grid_width</span><span class="p">)),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'binary'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Pattern </span><span class="si">%i</span><span class="s2">"</span> <span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"Remembered Patterns"</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s1">'xx-large'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Create network weights matrix</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">grid_size</span><span class="p">,</span> <span class="n">grid_size</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">grid_size</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">grid_size</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span> <span class="ow">or</span> <span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">continue</span>
+            
+        <span class="n">w</span> <span class="o">=</span> <span class="mf">0.0</span>
+        
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_patterns</span><span class="p">):</span>
+            <span class="n">w</span> <span class="o">+=</span> <span class="n">stored</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">stored</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            
+        <span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span> <span class="o">/</span> <span class="n">grid_size</span>
+        <span class="n">W</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+<span class="c1"># Test noisy inputs</span>
+<span class="n">noise_rate</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">num_cycles</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">num_patterns</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_patterns</span><span class="p">):</span>
+    <span class="n">original_image</span> <span class="o">=</span> <span class="n">stored</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+    <span class="n">noisy_image</span> <span class="o">=</span> <span class="n">original_image</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">grid_size</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">noise_rate</span><span class="p">:</span>
+            <span class="n">noisy_image</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="n">test_image</span> <span class="o">=</span> <span class="n">noisy_image</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_cycles</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">grid_size</span><span class="p">):</span>
+            <span class="n">test_image</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">test_image</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="mf">1.0</span>
+
+    <span class="c1"># Display results</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">noisy_image</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">grid_height</span><span class="p">,</span> <span class="n">grid_width</span><span class="p">)),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'binary'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Noisy Input Pattern </span><span class="si">%i</span><span class="s2">"</span> <span class="o">%</span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">test_image</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">grid_height</span><span class="p">,</span> <span class="n">grid_width</span><span class="p">)),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'binary'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Hopfield Network Prediction"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">original_image</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">grid_height</span><span class="p">,</span> <span class="n">grid_width</span><span class="p">)),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'binary'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Target Pattern </span><span class="si">%i</span><span class="s2">"</span> <span class="o">%</span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"Noisy Image Retrieval (Noise Rate=</span><span class="si">%d</span><span class="s2">"</span> <span class="o">%</span><span class="p">(</span><span class="n">noise_rate</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span> <span class="o">+</span><span class="s2">"$\%$)"</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.91</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s1">'xx-large'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Calculate energies of stored patterns</span>
+<span class="n">energy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_patterns</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_patterns</span><span class="p">):</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">grid_size</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">grid_size</span><span class="p">):</span>
+            <span class="n">e</span> <span class="o">+=</span> <span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">stored</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">*</span> <span class="n">stored</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+    <span class="n">e</span> <span class="o">*=</span> <span class="o">-</span><span class="mf">0.5</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Energy of pattern "</span><span class="p">,</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="s2">":"</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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%0A">
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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%0A">
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Energy of pattern  1 : -24.00000000000004
+Energy of pattern  2 : -36.48979591836736
+Energy of pattern  3 : -37.06122448979593
+Energy of pattern  4 : -24.57142857142869
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In this toy example we have seen results that are not unreasonable, however even in this relatively simple example we see that patterns 2 and 3 are not recalled exactly - most likely as there is a high degree of overlap between them, each time the network dynamics converged to a spurious pattern.</p>
+<p>Hopfield networks were the basis for the development of Boltzmann machines however which are stochastic versions of the Hopfield network. We will not touch on these here.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="NK-Model">
+<a class="anchor" href="#NK-Model" aria-hidden="true"><span class="octicon octicon-link"></span></a>NK Model<a class="anchor-link" href="#NK-Model"> </a>
+</h2>
+<p>We now focus our attention on another model with a similarity to spin-glasses: the NK model propsed by Stuart Kauffmann. Described as a "tunable ruggedness" model by Kauffmann, the NK model originally proposed as a model of evolution (not to be confused with an "evolutionary algoirthm"). The model controls the size of a landscape and the number of local optima via the 2 parameters $N$ and $K$. The $N$ parameter denotes the degrees of freedom or the "size" of the system. the parameter $K$ represnts the level of interactivity between those degrees of freedom. $K$ varies from $K=0$ (leading to a smooth landscape) through to $K=N-1$ the most rugged/peaked.</p>
+<p>In the context of spin-glass models we can express the Hamiltonians corresponding to the NK model as:
+\begin{align}
+K=0  \implies H &amp;= - \sum_{i} J_{i} \sigma_{i} \\
+K=1  \implies H &amp;= - \sum_{i} J_{i} \sigma_{i} - \sum_{ij} J_{ij} \sigma_{i}\sigma_{j} \\
+K=2  \implies H &amp;= - \sum_{i} J_{i} \sigma_{i} - \sum_{ij} J_{ij} \sigma_{i}\sigma_{j} - \sum_{ijk} J_{ijk} \sigma_{i}\sigma_{j}\sigma_{k}
+\end{align}
+And so on. through this interpretation we can see that the NK model is nothing more than a generalization of the spin glass models we have looked at previously. However the model did not use spin-glasses as a basis, it was developed as a way of studying evolutionary systems and how one can navigate a fitness landscape.</p>
+<p>As one would expect given the similarity the NK model shares some of the properties of spin-glasses; most notably that it has a very complicated landscape that often makes it hard to find even local optima. If the model sufficiently captures the properties of evolutionary systems this has some interesting implications.</p>
+<p>We'll now present an NK model outside of the context of spin-glasses - namely as an evolution model as originally intended. We start by considering a sequence of genes $(s_i)_{i=1}^N$. We want to observe what happens to these genes over time. Within this model we assume an organism ($\mathbf{s}$) is completely defined by its gene sequence. The fitness of an organism is defined as an average of the fitness of its genes:
+
+$$ F(\mathbf{s}) = \frac{1}{N} \sum_i f(s_i)$$
+
+The fitness function depends on the value of the gene itself but also other genes - in biology this is known as "epistasis". We use the matrix $\left( A_{ij} \right)_{i,j=1}^N$ to denote dependence. If $A_{ij} = 1$ then gene $i$ depends on gene $j$ and is zero otherwise. Note that this matrix denotes a directed network and need not be symmetric. We can then compute a fitness landscape for each organism according to this equation.</p>
+<p>In the NK model we assume that initially the entire population consists of one organism (sequence of genes). At random a mutation occurs to one of the genes, this new mutation either dies out quickly (if it has a lower fitness) or it reproduces faster than the original organism (which dies out) and becomes the sole organism in the system. The assumption here of course is that genetic mutations are far enough apart in time that the system can "settle" at each step.</p>
+<p>Given a fitness landscape we can specify the dynamics of the NK model as:</p>
+<ol>
+<li>From $\mathbf{s} = (s_1, ..., s_N)$ pick a gene $i \in {1, ... , N}$ at random and mutate its value to create a new organism $\mathbf{\hat{s}}$</li>
+<li>If $F(\mathbf{\hat{s}}) &gt; F(\mathbf{s})$ use $\mathbf{\hat{s}}$ as the new state, otherwise keep $\mathbf{s}$ and repeat</li>
+</ol>
+<p>Clearly this is simply a greedy hill climber algorithm and the dynamics will end up in a nearby local maxima. The main attraction of the NK model is through the development of the fitness landscape.</p>
+<p>The NK model has been developed further in the NKCS model. The NK model essentially looks at genetic variation of one species, the NKCS model extends this idea to multiple species. To do this we assume each species follows its own NK dynamics, its dynamics also interacts with $S$ other species. Each gene in a species is coupled to $C$ randomly chosen genes from the $S$ species. The dynamics can then be described as:</p>
+<ol>
+<li>Sequentially select each species during a time step</li>
+<li>With the selected species mutate one of the genes</li>
+<li>Calculate the updated fitness and either accept or reject this mutation and repeat</li>
+</ol>
+<p>Whereas the NK model always ends up in a local fitness maxima this is not necessarily true of the NKCS model since for a fixed point we would require each species to be in a fitness maxima at the same time. This allows the model to display some more sophsticated dynamics such as criticality, self-organised-criticality and co-evolution (and others).</p>
+<p>In addition to evolution these models can also be used as a model of immunity. Along with this NKCS models have been used as a model of technological evolution. The model is general enough that it can be applied to, essentially, any evolutionary system.</p>
+<p>These models can get fairly complicated, in the future I may write a full length post on models of evolution.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Conclusion">
+<a class="anchor" href="#Conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion<a class="anchor-link" href="#Conclusion"> </a>
+</h2>
+<p>We have now seen that we can extend our spin-glass models to more sophisticated spin-glass models through the Potts model which are more physically plausible. We also saw that spin-glass models were a major influence on some of the first artificial neural networks. Lastly by looking at spin-glasses from a different point of view we have seen how they can inform our understanding of evolutionary systems.</p>
+<p>We did not cover it here but spin-glasses have also influenced combinatorial optimization problems. We touched upon this in a previous post where we introduced the concept of simulated annealing. These techniques have been used in computer chip design (where one needs to optimize size/geometry of chip design versus performance). They have also been used in studying protein folding where there is a large universe of possible orientations that need to be searched according to a number of constraints.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><a class="u-url" href="/spin-glass-models-5" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>A blog about maths, probability, modelling and computing.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/lewiscoleblog" title="lewiscoleblog"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/jazzcoffeestuff" title="jazzcoffeestuff"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
