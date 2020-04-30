@@ -363,7 +363,7 @@ If $C_i^p&lt;0$ then $\hat{x}^p$ will be a fixed point. For $C_i^p&gt;1$ then th
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_patterns</span><span class="p">):</span>
             <span class="n">w</span> <span class="o">+=</span> <span class="n">stored</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">stored</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
             
-        <span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span> <span class="o">/</span> <span class="n">grid_size</span>
+        <span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span> <span class="o">/</span> <span class="n">num_patterns</span>
         <span class="n">W</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">W</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
 
 <span class="c1"># Test noisy inputs</span>
@@ -444,10 +444,10 @@ If $C_i^p&lt;0$ then $\hat{x}^p$ will be a fixed point. For $C_i^p&gt;1$ then th
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Energy of pattern  1 : -24.00000000000004
-Energy of pattern  2 : -36.48979591836736
-Energy of pattern  3 : -37.06122448979593
-Energy of pattern  4 : -24.57142857142869
+<pre>Energy of pattern  1 : -294.0
+Energy of pattern  2 : -447.0
+Energy of pattern  3 : -454.0
+Energy of pattern  4 : -301.0
 </pre>
 </div>
 </div>
