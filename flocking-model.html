@@ -244,6 +244,7 @@ We also apply a "speed limit" to the agents to prevent them travelling arbitrari
 <span class="c1">###### Model Parameters ######</span>
 <span class="n">dt</span> <span class="o">=</span> <span class="mf">0.01</span>           <span class="c1"># Time step</span>
 <span class="n">num_frames</span> <span class="o">=</span> <span class="mi">250</span>    <span class="c1"># Number of animated frames</span>
+<span class="n">burn</span> <span class="o">=</span> <span class="mi">1000</span>         <span class="c1"># Number of burn in iterations</span>
             
 <span class="c1"># Flock Parameters</span>
 <span class="n">N</span> <span class="o">=</span> <span class="mi">250</span>             <span class="c1"># Number of flocking agents</span>
@@ -669,7 +670,6 @@ We also apply a "speed limit" to the agents to prevent them travelling arbitrari
     <span class="n">vpy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
 
 <span class="c1"># Burn simulations to improve initial conditions</span>
-<span class="n">burn</span> <span class="o">=</span> <span class="mi">1000</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">burn</span><span class="p">):</span>
     <span class="n">update</span><span class="p">()</span>
 
