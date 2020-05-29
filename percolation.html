@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Percolation | Lewis Cole Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Percolation" />
+<meta name="author" content="Lewis Cole (2020)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this blog post we will look at Percolation. Starting with some motivating examples we will solve the percolation problem on both a 1d and infinite dimensional lattice. We will use percolation to help understand how power-law behaviour arises from criticality near phase transitions." />
+<meta property="og:description" content="In this blog post we will look at Percolation. Starting with some motivating examples we will solve the percolation problem on both a 1d and infinite dimensional lattice. We will use percolation to help understand how power-law behaviour arises from criticality near phase transitions." />
+<link rel="canonical" href="https://www.lewiscoleblog.com/percolation" />
+<meta property="og:url" content="https://www.lewiscoleblog.com/percolation" />
+<meta property="og:site_name" content="Lewis Cole Blog" />
+<meta property="og:image" content="https://github.com/lewiscoleblog/blog/raw/master/images/Percolation/coffee.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-04-28T00:00:00-05:00" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"In this blog post we will look at Percolation. Starting with some motivating examples we will solve the percolation problem on both a 1d and infinite dimensional lattice. We will use percolation to help understand how power-law behaviour arises from criticality near phase transitions.","@type":"BlogPosting","headline":"Percolation","dateModified":"2020-04-28T00:00:00-05:00","datePublished":"2020-04-28T00:00:00-05:00","image":"https://github.com/lewiscoleblog/blog/raw/master/images/Percolation/coffee.jpg","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/percolation"},"url":"https://www.lewiscoleblog.com/percolation","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://www.lewiscoleblog.com/feed.xml" title="Lewis Cole Blog" /><link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Percolation | Lewis Cole Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Percolation" />
+<meta name="author" content="Lewis Cole (2020)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this blog post we will look at Percolation. Starting with some motivating examples we will solve the percolation problem on both a 1d and infinite dimensional lattice. We will use percolation to help understand how power-law behaviour arises from criticality near phase transitions." />
+<meta property="og:description" content="In this blog post we will look at Percolation. Starting with some motivating examples we will solve the percolation problem on both a 1d and infinite dimensional lattice. We will use percolation to help understand how power-law behaviour arises from criticality near phase transitions." />
+<link rel="canonical" href="https://www.lewiscoleblog.com/percolation" />
+<meta property="og:url" content="https://www.lewiscoleblog.com/percolation" />
+<meta property="og:site_name" content="Lewis Cole Blog" />
+<meta property="og:image" content="https://github.com/lewiscoleblog/blog/raw/master/images/Percolation/coffee.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-04-28T00:00:00-05:00" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"In this blog post we will look at Percolation. Starting with some motivating examples we will solve the percolation problem on both a 1d and infinite dimensional lattice. We will use percolation to help understand how power-law behaviour arises from criticality near phase transitions.","@type":"BlogPosting","headline":"Percolation","dateModified":"2020-04-28T00:00:00-05:00","datePublished":"2020-04-28T00:00:00-05:00","image":"https://github.com/lewiscoleblog/blog/raw/master/images/Percolation/coffee.jpg","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/percolation"},"url":"https://www.lewiscoleblog.com/percolation","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://www.lewiscoleblog.com/feed.xml" title="Lewis Cole Blog" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Lewis Cole Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/welcome/">Welcome</a><a class="page-link" href="/search/">Search</a><a class="page-link" href="/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Percolation</h1><p class="page-description">In this blog post we will look at Percolation. Starting with some motivating examples we will solve the percolation problem on both a 1d and infinite dimensional lattice. We will use percolation to help understand how power-law behaviour arises from criticality near phase transitions.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-04-28T00:00:00-05:00" itemprop="datePublished">
+        Apr 28, 2020
+      </time>• 
+          <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name">Lewis Cole (2020)</span></span>
+       <!-- • <span class="read-time" title="Estimated read time">
+    
+    
+      23 min read
+    
+</span>-->
+    </p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/categories/#Percolation">Percolation</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Criticality">Criticality</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Bethe-Lattice">Bethe-Lattice</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Dimensionality">Dimensionality</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Theory">Theory</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Probability">Probability</a>
+        
+      
+      </p>
+    
+
+    
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Introduction">Introduction </a></li>
+<li class="toc-entry toc-h2"><a href="#Mathematical-Formulation">Mathematical Formulation </a></li>
+<li class="toc-entry toc-h2"><a href="#Why-Should-We-Care?">Why Should We Care? </a></li>
+<li class="toc-entry toc-h2"><a href="#Percolation-in-1-dimension">Percolation in 1 dimension </a></li>
+<li class="toc-entry toc-h2"><a href="#Bethe-Lattice">Bethe Lattice </a></li>
+<li class="toc-entry toc-h2"><a href="#Percolation-in-d-dimenison-with-1-<-d-<-$\infty$">Percolation in d-dimenison with 1 &lt; d &lt; $\infty$ </a></li>
+<li class="toc-entry toc-h2"><a href="#Summary-of-Critical-Exponents">Summary of Critical Exponents </a></li>
+<li class="toc-entry toc-h2"><a href="#Conclusion">Conclusion </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-04-28-Percolation.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In this blog post we shall take a first look at percolation and how we can study it mathematically.</p>
+<h2 id="Introduction">
+<a class="anchor" href="#Introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction<a class="anchor-link" href="#Introduction"> </a>
+</h2>
+<p>Percolation theory and related studies is concerned with a simple problem: how does a substance pass through a random medium? Speaking in generalities such as this can obscure a concept so lets consider a real world example: we have a pool of oil sitting below a porous rock. We would like to know if we can "push" the oil through this rock or whether the rock is not "porous enough" for this to happen. (We could also ask a follow up question: if oil can pass can it do so in a timely matter?) Another real world example is a coffee percolator:
+<img src="https://github.com/lewiscoleblog/blog/raw/master/images/Percolation/coffee.jpg" alt="">
+Here we have a mass of ground coffee that we wish to pass (near) boiling water through in order to extract all its caffeine related goodness. From experience we know that if we grind very finely and pack very tightly the water has a hard time passing and we may need a lot of heat and pressure to get any coffee out (in some cases water may never pass).</p>
+<p>We can also consider percolation in a slightly different way. Imagine we have a sheet of paper and a hole punch, we randomly start punching holes in the paper - at some point the paper will break into 2 (or more) smaller seperate pieces of paper. What can we say about the number of holes required for this to happen?</p>
+<p>In all the examples above we are observing <strong>criticality</strong> or a <strong>phase transition</strong>. At some point of porosity the rock can allow oil to pass, if the rock is any less porous no oil can pass. Similarly grind the coffee too fine and the water will not pass through, but coarsen ever so slightly we can make (perhaps a small) cup of coffee. In the paper example the phase transition is even more obvious as the paper will physically break into multiple parts when we punch the last hole. Perhaps the most common example of a phase transition however are states of matter - in particular water changing to ice at 0 celcius or water vapour at 100 celcius (this is unrelated to percolation however). The point at which the phase of these systems change is called the <strong>critical point</strong> and it is a very common behaviour in both physical and social systems. Studying these can be quite illuminating as behaviour often "gets weird" when a system nears a critical point.</p>
+<h2 id="Mathematical-Formulation">
+<a class="anchor" href="#Mathematical-Formulation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mathematical Formulation<a class="anchor-link" href="#Mathematical-Formulation"> </a>
+</h2>
+<p>Now we have some real world intuition of what percolation theory is all about let's start to phrase it in a more mathematical setting so that we are better able to study it.</p>
+<p>In percolation theory we are usually concerned with lattices. Lattices are a form of connected graph that can extend to infinity. A classic example would be a 2d square lattice where each site in the lattice has an "up", "down", "left" and "right" neighbour, we can imagine this as a sheet of squared paper. Other types of lattice can exist however; higher dimensions, different geometries and so on.</p>
+<p>With our lattice we can then consider "populating" it, for each site in the lattice we randomly select whether it is populated or not. Typically we would consider this independently uniformly at random. We denote this probability $p$. One question we might ask is at what population probability is it possible to move from one side of the lattice to the other where each step we can move to a nearest neighbour only? Or we could ask the question what is the distribution of cluster size? What is the average cluster size? And so on.</p>
+<p>In general we do this in relation to an "infinite" sized lattice since these are often easier to work with mathematically. When dealing with finite sizes we typicaly want to assume the lattices are sufficiently large that any "edge effects" (weirdness relating to edge sites having fewer neighbours than interior sites) can be ignored. Although investigations on smaller scale percolations are also an active field of research due to their practical application.</p>
+<p>So far we have phrased the percolation problem in terms of <strong>site percolation</strong> - whereby the sites themselves are occupied or vacant. We could equally consider <strong>bond percolation</strong> whereby in the lattice we consider the "edges" between sites. With probability $p$ we select whether an edge exists. Now we can can consider "paths" travelling along the edges - can we move from the top of the lattice to the bottom? and so on. In our examples above the porous oil and coffee problems are examples of bond percolation, the paper problem is a site percolation.</p>
+<p>One might expect these to be equivalent to one another however that is not always the case depending on the geometry of a lattice.</p>
+<p>Given the formulation here we can see that percolation problems lend themselves to being studied computationally. We can randomly generate finite lattices and analyse them to get intiution about how these things behave. However using this approach will not allow us to ever have a definitive "result" without a corresponding mathematical proof.</p>
+<p>Some extensions we may wish to consider include:</p>
+<ul>
+<li>What if the sites/bonds are not independent (or uniformly) distributed?</li>
+<li>What about the edge effects?</li>
+<li>What about directed networks?</li>
+<li>What if connectivity is not static over time?</li>
+<li>How do we find the "path of least resistance" to pass through a realisation of a lattice?</li>
+</ul>
+<h2 id="Why-Should-We-Care?">
+<a class="anchor" href="#Why-Should-We-Care?" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why Should We Care?<a class="anchor-link" href="#Why-Should-We-Care?"> </a>
+</h2>
+<p>We have seen one potential application of percolation theory: predicting whether we can extract oil through a porous rock. In fact when extracting oil they do take a small sample of the rock to analyse to see whether percolation is possible. The coffee and paper examples, while providing intuition, are not applications in the sense we would not use percolation theory to solve them!</p>
+<p>What are some other examples we might care about?</p>
+<ol>
+<li>
+<strong>Forest Fires</strong> - we could imagine a forest being made up of sites on a 2d lattice, some occupied with trees and some empty. We could investigate how forest density leads to fire spreading, we would not want to run real-world experiments on this for obvious reasons! We can build in more sophistication through modelling damp/dry patches, wind, air temperature and so on. The results from models like these can influence policy around back-burning, controlled cut-downs etc. to reduce the likelihood of larger more devastating wild fires. (This is a site percolation problem)</li>
+<li>
+<strong>Social Networks</strong> - We may be interested in how information spreads through a social network. We can study how network connectivity influences this. If we were running a viral marketing campaign we might wish to understand the penetration required of the social network for an idea to take off. (This is a bond percolation problem)</li>
+<li>
+<strong>Communication Networks</strong> - Suppose we are a telecom provider interested in keeping a service running 24/7. We have a network that allows this to happen with a number of connections between the individual nodes. We may wish to know how many connections (or nodes) need to "go down" for the entire system to fall over. We can then grow the network in such a way as to ensure robustness. (This is a bond percolation problem)</li>
+<li>
+<strong>Electrical Engineering</strong> - If we imagine impregnating an insulating material with (for example) carbon nano-tubes, we could ask how much carbon we would need to add to turn the insulator into a conductor? Essentially we are asking what is the proportion of carbon required to make a "bridge" across the material to allow for electron flow. (This is a site percolation problem).</li>
+<li>
+<strong>Fault Lines</strong> - Another application is the study of fault lines for use in predicting earthquakes. We can study the degree of "cracking" required for a "split" using tools based on percolation.</li>
+<li>
+<strong>Biology/Medicine</strong> - Percolation theory has been used to understand virus fragmentation as well as modelling disease spread and fragmentation of ecological systems.</li>
+</ol>
+<h2 id="Percolation-in-1-dimension">
+<a class="anchor" href="#Percolation-in-1-dimension" aria-hidden="true"><span class="octicon octicon-link"></span></a>Percolation in 1 dimension<a class="anchor-link" href="#Percolation-in-1-dimension"> </a>
+</h2>
+<p>As with many physical and mathematical systems it makes sense to start with 1 dimension since this is often easy to visualize, the mathematics tends to be simple and we can generally use intuition to "solve" the system.</p>
+<p>Our lattice in 1 dimension is essentially a line segment made up of a number of sites joined together. (We can equivalently consider a bond percolation in the exact same way, in this 1d example the 2 formulations are equivalent - not necessarily true in more complex scenarios!)
+<img src="https://github.com/lewiscoleblog/blog/raw/master/images/Percolation/1d.png" alt=""></p>
+<p>We assume that each site is occupied (independently) with fixed probability $p$. If we imagine taking this line segment and adding extra sites to the end one-by-one (to the limit of infinity), it does not take much to realise that if $p&lt;1$ then eventually we will come across an un-occupied site and so there will not exist a path from one end of the lattice to the other (i.e. there is no percolation!) Clearly if $p=1$ then every site is occupied and it is possible to create a path. We denote this probability $p_c$ (critical probability), it is one of the quantities we wish to study. In more complicated lattices we will not be able to use intuition quite so easily!</p>
+<p>We will now step back and solve the system mathematically. In this case it is not strictly required, however it will provide a blueprint for how to approach more complicated lattices. It also allows us to introduce some of the notation.</p>
+<p>We will fix a lattice size $L$, we will assume this is suitably large so that we can ignore any edge effect complications. The probability that there exists a cluster of size $s&lt;L$ (that is a group of adjacent sites that are all occupied) is:
+
+$$n_s = p^s(1-p)^2 $$
+
+This is since we need $s$ occupied sites (probability $p^s$) surrounded by 2 empty sites (probability $(1-p)^2$) - since we are assuming independence this works as desired. We can look at the expected number of such clusters via: $Ln_s$ since we assume any edge effects are minimal (we could work this out exactly but it is not necessary here). Typically however we want to scale $L \to \infty$ so we will work with probabilities instead. Quite clearly if $p&lt;1$ then $n_s \to 0$ as $s \to \infty$ - which is just a way of expressing our intuition above through mathematics.</p>
+<p>We can further note that the probability that a site belongs to a cluster of size $s$ is $s n_s$ (it can be positioned in any 1 of the $s$ sites in the cluster). We then have (for an infinite size lattice) the relation:
+
+$$ \sum_s s n_s = p $$
+
+To see this we can note:
+\begin{align}
+\sum_s s n_s &amp;= \sum_s s p^s (1-p)^2 \\
+             &amp;= (1-p)^2 p \sum_s \frac{d}{dp} p^s \\
+             &amp;= (1-p)^2 p \frac{d}{dp} \sum_s p^s \\
+             &amp;= (1-p)^2 p  \frac{d}{dp} \left( \frac{1-p^{L'}}{1-p}   \right) \\
+             &amp;= (1-p)^2 p \left((1-P^{L'})(1-p)^{-2} - L'p^{L'-1}(1-p^{L'-1})(1-p)^{-1}   \right) \\
+             &amp;\xrightarrow{L' \to \infty} (1-p)^2 p (1-p)^{-2} \\
+             &amp;= p
+\end{align}
+Note: here we imagine a smaller "window" within our lattice such that $L' \leq L-2$ to avoid edge effects. This is a common "trick" to deal with asymptotic behaviours. There are other ways to deal with this such as using periodic boundary conditions too. In this example we could actually compute all the options if we wanted to, the extra terms would "disappear" when taking the limit.</p>
+<p>This formula containing $p$ is actually fairly intuitive despite looking "complicated", it essentially states: "every occupied site has to belong to some cluster" - so the sum over all cluster sizes must equal the probability that the site is occupied! In some cases the seemingly intuitive explanations can turn out to be wrong, so it is a good habit to prove these results rather take them for granted and only later realise they are incorrect. This seems especially true in probability theory.</p>
+<p>We can now define a new variable:
+
+$$ w_s = \frac{s n_s}{\sum_{s'} s' n_{s'}}$$
+
+Which is in some sense a "weighting" of relative cluster sizes. We can then calculate the average cluster size using:
+
+$$ S_L = \sum_s s w_s $$
+
+By taking the limit we can observe the asymptotic behaviour:
+
+$$ S_{\infty} = \lim_{L \to \infty} \sum_s s w_s $$
+</p>
+<p>Can we find a formula for this value? In the case of the 1d lattice we can, in other more complicated geometries we may not be able to. In the derivation below I exchange limits/sums/derivatives quite freely since this is valid in this case.
+\begin{align}
+S_{\infty} &amp;= \lim_{L \to \infty} \sum_s  \frac{s^2 n_s}{\sum_{s'} s' n_{s'}} \\
+           &amp;= \lim_{L \to \infty} \sum_s  \frac{s^2 n_s}{p} \\
+           &amp;= \frac{(1-p)^2}{p} \left( p \frac{d}{dp} \right)^2 \lim_{L \to \infty} \sum_s p^s \\
+           &amp;= \frac{(1-p)^2}{p} \left( p \frac{d}{dp} \right)^2 \frac{1}{1-p} \\
+           &amp;= \frac{(1-p)^2}{p} \left( p \frac{d}{dp} \right) \frac{p}{(1-p)^2} \\
+           &amp;= \frac{(1-p)^2}{p} \left( \frac{p}{(1-p)^2} + \frac{2p^2}{(1-p)^3} \right) \\
+           &amp;= 1 + \frac{2p}{1-p} \\
+           &amp;= \frac{1+p}{1-p} \\
+           &amp;= \frac{p_c+p}{p_c-p}
+\end{align}
+For values of $p$ close to $p_c = 1$ we have:
+
+$$ S_{\infty} \approx \frac{2p_c}{p_c - p} \propto |p_c - p|^{-1}$$
+
+In general percolation problems the behaviour of cluster size around the critical probability is defined by the "critical exponent" which we denote $\gamma$:
+
+$$ S_{\infty} \propto |p_c - p|^{-\gamma} $$
+
+In the case of the 1d lattice percolation this is $\gamma = 1$.</p>
+<p>Another concept we have is the "correlation function" $g(r)$ which represents the probability that 2 sites distance $r$ apart belong to the same cluster. In the 1d case we can represent this as:
+
+$$g(r) = p^r$$
+
+Which we can re-express in the form:
+
+$$ g(r) = exp\left(\frac{-r}{\xi}\right)$$
+
+Where $\xi = \frac{-1}{ln(p)}$ is called the correlation length. For $p$ close to $p_c$ we have $\xi \approx (p_c - p)^{-1} \approx S_{\infty}$. Which is another critical exponent: $\xi \approx (p_c - p)^{-\nu}$. In this case $\nu = \gamma$ but this is not necessarily true in general.</p>
+<p>We can also express the cluster size via correlation functions:
+
+$$ S_L = \sum_r g(r) $$
+</p>
+<p>This completely solves the percolation problem in the 1d lattice case. Unfortunately things are not always this simple.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Bethe-Lattice">
+<a class="anchor" href="#Bethe-Lattice" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bethe Lattice<a class="anchor-link" href="#Bethe-Lattice"> </a>
+</h2>
+<p>We now move onto another lattice that can be solved exactly: the Bethe lattice. A Bethe lattice is an infinite connected cycle-free graph where each node has exactly $z$ neighbours. It is also sometimes called a Caley tree. We can think of the 1d lattice case above as being a Bethe lattice with $z=2$.</p>
+<p><img src="https://github.com/lewiscoleblog/blog/raw/master/images/Percolation/bethe.png" alt="" title="Bethe lattice z=3"></p>
+<p>If the sites are arranged in "shells" as in the diagram above the number of sites in the kth shell is:
+
+$$N_k = z(z-1)^{k-1}$$
+</p>
+<p>We can think of the Bethe lattice as an infinite dimensional lattice. Why is this? If we consider a 3d space, we note that: $$Area \propto L^2$$
+For some length $L$ for a generic shape. similarly for volume we have:
+
+$$Vol \propto L^3 $$
+
+For example the volume of a sphere is $\frac{4}{3}\pi r^3$ and the surface area of the sphere is $4 \pi r^2$, and similar formulae exist for cubes, etc. We notice that:
+
+$$ \frac{Area}{Vol}_{3d} \propto \frac{L^2}{L^3} = L^{1 - \frac{1}{3}}$$
+
+If we repeat the same procedure with a 4d space we get:
+
+$$ \frac{Area}{Vol}_{4d} \propto L^{1 - \frac{1}{4}}$$
+
+And in general for a D dimensional space:
+
+$$ \frac{Area}{Vol}_{Dd} \propto L^{1 - \frac{1}{D}}$$
+</p>
+<p>What about the Bethe lattice? From above we know the number of sites in the kth shell is: $z(z-1)^{k-1}$ we can then image these shells "encompassing" all preceeding shells to get a "volume". So in this case:
+
+$$Vol = 1 +\sum_{i=1}^k z(z-1)^{i-1} = 1 + \frac{z((z-1)^k - 1)}{z-2} = \frac{z(z-1)^k - 2}{z-2}$$
+
+And so:
+
+$$ \frac{Area}{Vol}_{Bethe} =  \frac{z(z-1)^{k-1}}{\frac{z(z-1)^k - 2}{z-2}} \xrightarrow{k \to \infty} \frac{z-2}{z-1} $$
+
+And so the ratio tends to a constant, in other words:
+
+$$ \frac{Area}{Vol}_{Bethe} \propto L^{0}$$
+
+Which is in some sense equivalent to an "infinite dimensional" space (by taking $D=\infty$ into the formula for $\frac{Area}{Vol}_{Dd}$).</p>
+<p>We can find the percolation threshold probability through a relatively simple argument. We start at the origin (centre site); if a site exists in the next shell it has $(z-1)$ possible "new" neighbours. Given this site is occupied with probability $p$, the number of (expected) occupied neigbours is: $p(z-1)$. For an infinite cluster to exist we require this quantity to be greater than $1$ and so we have:
+
+$$p_c = \frac{1}{z-1}$$
+
+This ties in with our finding for the 1d lattice ($z=2$) as we would expect. Also notice that again in this case we could exchange "bond" for "site" and the argument still holds and so we have the critical probability is the same for both site and bond percolation problems. This does not hold true in general lattices.</p>
+<p>We now introduce a new concept: In the 1d case we could only approach $p_c$ from below (at least I know of no way to consider probabilities in excess of 1!) Whereas now we can consider what happens above the percolation threshold. From common sense intuition we know that if $p=1$ the infinite cluster will in some sense be "stronger" than if $p$ is only slightly above $p_c$. We would like a metric to use to illustrate this concept. The infinite cluster strength represents the probability that a given site is part of the infinite cluster (that is we can follow a path from this site to infinity). Cleary the strength is zero below the percolation threshold and $1$ for $p=1$. We denote the cluster strength by $P(p)$ - this is an example of an order parameter.</p>
+<p>To derive the cluster strength we introduce a quantity $Q(p)$ which is the probabilty that a site is not connected to the infinite cluster. We can then write:
+
+$$P(p) = p(1-Q^z(p))$$
+
+Which is the probability that a site is occupied and at least one path to infinity exists for that site. But we can further write:
+
+$$Q(p) = (1-p) + pQ^{z-1}(p)$$
+
+The probability the node is not occupied or it is occupied but the neighbours do not have a path to infinity.</p>
+<p>We find that there is a trivial solution $Q(p)=1$ with non-trivial solution:
+
+$$Q(p) = 1 - \frac{2p(z-1)-2}{p(z-1)(z-2)} $$
+
+And so:
+
+$$P(p) = p\left(1 - \left( 1 - \frac{2p(z-1)-2}{p(z-1)(z-2)} \right)^z \right) $$
+
+Via a rather messy Taylor expansion we can show:
+
+$$ P(p) \propto |p_c - p|^{-1} $$
+
+This is another critical exponent for the Bethe lattice. In general lattices we shall find:
+
+$$ P(p) \propto |p_c - p|^{-\beta} $$
+
+For some $\beta$.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We now move onto looking at the average cluster size $S(p)$. To do this we will introduce an intermediate varible $T$ which represents contribution from an individual bond in the lattice. The average cluster size containing the origin is then:
+
+$$S(p) = 1 + zT$$
+
+Since there are $z$ bonds. For each branch we note that either the neighbouring site is un-occupied (probability $(1-p)$ but contribution 0 to the average) or it is occupied (probability $p$ with $(z-1)$ neighbours) so we can express $T$ as:
+
+$$ T = p(1 + (z-1)T) \iff T = \frac{p}{1-(z-1)p}$$
+
+And so:
+
+$$S(p) = 1 + \frac{zp}{1-(z-1)p} = \frac{p_c(1+p)}{p_c - p}$$
+
+Where $p_c = \frac{1}{z-1}$. Thus the critical exponent is $\gamma = 1$ as in the 1d case. We can also expand on our previous identity from the 1d case to give:
+
+$$P(p) + \sum_{s=1}^{\infty} s n_s(p) = p $$
+
+This equation holds for all lattices not just the Bethe lattice. We may naturally ask what form does $n_s(p)$ take in the Bethe lattice? Clearly the formula from the 1d lattice is not correct. We can show that $n_s$ is of the form:
+
+$$ n_s(p) = g_{s,z} p^s (1-p)^{2+s(z-2)} $$
+
+Where $g_{s,z}$ is some constant fixed for each cluster size ($s$) and Bethe lattice number ($z$). This constant can be hard to calculate for large $s$ since there are many possible configurations of sites. We can however look at ratios so remove the pesky constant:
+\begin{align}
+\frac{n_s(p)}{n_s(p_c)} &amp;= \frac{p^s (1-p)^{2+s(z-2)}}{p_c^s (1-p_c)^{2+s(z-2)}} \\
+                        &amp;= \left(\frac{1-p}{1-p_c}\right)^2 exp\left(s ln\left[ \frac{p(1-p)^{z-2}}{p_c(1-p_c)^{z-2}} \right] \right)\\
+                        &amp;= \left(\frac{1-p}{1-p_c}\right)^2 exp\left( \frac{-s}{s_\xi} \right)
+\end{align}
+With:
+
+$$ s_\xi = \frac{-1}{ln \left( \frac{p(1-p)^{z-2}}{p_c(1-p_c)^{z-2}} \right)} $$
+
+Through a Taylor expansion we can show:
+
+$$ s_\xi \propto |p_c - p|^{\frac{-1}{\sigma}} $$
+
+With another critical exponent parameter $\sigma$. In the case of the Bethe lattice  $\sigma = \frac{1}{2}$.</p>
+<p>We can now use $s_\xi$ to investigate $n_s(p)$. Through some more work we can show:
+
+$$n_s(p) \propto s^{-\tau} exp \left( \frac{-s}{s_{\xi}} \right) $$
+
+For another critical exponent $\tau$. In the case of the Bethe lattice we have $\tau = \frac{5}{2}$. The quantity $s_{\xi}$ Is often called the "cutoff cluster size" since: for for clusters very much below this we have $n_s(p) \propto s^{-\tau}$ while above this clusters decay very quickly.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Percolation-in-d-dimenison-with-1-&lt;-d-&lt;-$\infty$">
+<a class="anchor" href="#Percolation-in-d-dimenison-with-1-&lt;-d-&lt;-%24%5Cinfty%24" aria-hidden="true"><span class="octicon octicon-link"></span></a>Percolation in d-dimenison with 1 &lt; d &lt; $\infty$<a class="anchor-link" href="#Percolation-in-d-dimenison-with-1-&lt;-d-&lt;-%24%5Cinfty%24"> </a>
+</h2>
+<p>We have seen percolation in 1 dimension and in infinite dimensions (Bethe lattice) - what about other dimensions? Unfortunately things get (much) more complicated. To see why this is we first saw that we could "count" the clusters of a given size in the 1d lattice fairly easily, in the Bethe lattice we could also rely on the "cycle free" structure to help us count the arrangement of sites. This is not so easy in other lattices. For example consider the 2d square lattice, if we just look at the different ways a site (in red) can contribute to a cluster (in black) we have:
+<img src="https://github.com/lewiscoleblog/blog/raw/master/images/Percolation/3cluster.png" alt=""></p>
+<p>And so (by counting the empty neigbouring sites):
+
+$$n_3(p) = 6 p^3 (1-p)^8 + 12 p^3 (1-p)^7 $$
+
+These formulae only get more complicated as the cluster size increases and as the dimension increases. We cannot easily find a general solution to this problem. Even if we could it is unlikely we'll be able to make much traction using the techniques we have discussed so far.</p>
+<p>So far we have seen that site percolation is equivalent to bond percolation. In general this is not the case, it is not hard to see this by considering bond and site percolations on the 2d space. We note however that any bond percolation problem can be reformulated as a site percolation problem (in most cases in a different lattice geometry). As such most study is focussed on site percolation.</p>
+<p>In many problems an exact anaytic solution to the percolation problem is not possible/very difficult so many results are uncovered using computer simulations.</p>
+<p>The table below summarises some of the critical probabilites for various lattice dimension and geometries:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>pc Site Percolation</th>
+      <th>pc Bond Percolation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1d</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>2d Hex</td>
+      <td>0.696</td>
+      <td>1-2sin(𝜋/18)</td>
+    </tr>
+    <tr>
+      <td>2d Square</td>
+      <td>0.593</td>
+      <td>1/2</td>
+    </tr>
+    <tr>
+      <td>2d Triangle</td>
+      <td>1/2</td>
+      <td>2sin(𝜋/18)</td>
+    </tr>
+    <tr>
+      <td>3d Diamond</td>
+      <td>0.430</td>
+      <td>0.388</td>
+    </tr>
+    <tr>
+      <td>3d Cubic</td>
+      <td>0.312</td>
+      <td>0.249</td>
+    </tr>
+    <tr>
+      <td>4d Cubic</td>
+      <td>0.197</td>
+      <td>0.160</td>
+    </tr>
+    <tr>
+      <td>5d Cubic</td>
+      <td>0.141</td>
+      <td>0.118</td>
+    </tr>
+    <tr>
+      <td>6d Cubic</td>
+      <td>0.107</td>
+      <td>0.094</td>
+    </tr>
+    <tr>
+      <td>Bethe (z)</td>
+      <td>1/(z-1)</td>
+      <td>1/(z-1)</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>When not expressed as a fraction or trigonometric function probabilities are expressed to 3 significant figures.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Summary-of-Critical-Exponents">
+<a class="anchor" href="#Summary-of-Critical-Exponents" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary of Critical Exponents<a class="anchor-link" href="#Summary-of-Critical-Exponents"> </a>
+</h2>
+<p>Due to its simplicity for the 1d case we only looked at 1 critical exponent. In more complicated lattices we can describe 5 different critical behaviours $(\gamma, \beta, \nu,  \sigma, \tau)$:
+\begin{align}
+S(p) &amp;\propto |p_c - p|^{-\gamma} \\
+P(p) &amp;\propto |p_c - p|^{-\beta}  \\
+\xi(p) &amp;\propto |p_c - p|^{-\nu}  \\
+s_\xi(p) &amp;\propto |p_c - p|^{\frac{-1}{\sigma}}  \\
+n_s(p) &amp;\propto s^{-\tau} exp \left( \frac{-s}{s_{\xi}} \right)  
+\end{align}
+Where these proportionalities only hold when we are close to the critical percolation probability. We can see that these will vary depending on the geometry of the lattices involved.</p>
+<p>We can see that the behaviour of these quantities around the critical point behave as a power-law. This is a universal behaviour of "criticality" and what makes studying behaviour around phase transitions so interesting. The behaviours can become highly unusual, the critical exponents provide a way of classifying these behaviours.</p>
+<p>Another exponent of interest is $\alpha$. We define the probability that a site (e.g. the origin) is connected to another site distance $r$ away as:
+
+$$q(r) \propto r^{\alpha} $$
+
+Where the probability is evaluated at the critical percolation probability.</p>
+<p>We can summarise these exponents int he table below:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>1d</th>
+      <th>2d</th>
+      <th>3d</th>
+      <th>4d</th>
+      <th>5d</th>
+      <th>6d</th>
+      <th>Bethe</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>𝛼</td>
+      <td>0</td>
+      <td>-2/3</td>
+      <td>-0.62</td>
+      <td>-0.72</td>
+      <td>-0.86</td>
+      <td>-1</td>
+      <td>-1</td>
+    </tr>
+    <tr>
+      <td>𝛽</td>
+      <td>0</td>
+      <td>5/36</td>
+      <td>0.41</td>
+      <td>0.64</td>
+      <td>0.84</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>𝛾</td>
+      <td>1</td>
+      <td>43/18</td>
+      <td>1.80</td>
+      <td>1.44</td>
+      <td>1.18</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>𝜈</td>
+      <td>1</td>
+      <td>4/3</td>
+      <td>0.88</td>
+      <td>0.68</td>
+      <td>0.57</td>
+      <td>1/2</td>
+      <td>1/2</td>
+    </tr>
+    <tr>
+      <td>𝜎</td>
+      <td>1</td>
+      <td>36/91</td>
+      <td>0.45</td>
+      <td>0.48</td>
+      <td>0.49</td>
+      <td>1/2</td>
+      <td>1/2</td>
+    </tr>
+    <tr>
+      <td>𝜏</td>
+      <td>2</td>
+      <td>187/91</td>
+      <td>2.18</td>
+      <td>2.31</td>
+      <td>2.41</td>
+      <td>5/2</td>
+      <td>5/2</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We notice that the critical exponent behaviour depends on the dimension only and not any specific geometry, unlike the critical probability.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Conclusion">
+<a class="anchor" href="#Conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion<a class="anchor-link" href="#Conclusion"> </a>
+</h2>
+<p>In this blog post we have looked at the very basics of Percolation theory. We should have an idea of why we should study this phenomena through the use of some motivating examples. We gained some intuition by analysing 2 "simple" examples in 1d and infinite dimensions. We have also seen how the percolation problem gives rise to criticality and how behaviour around a critical point gives rise to power-law behaviours.</p>
+<p>This is just a brief introduction and there are many areas we did not touch upon here. Since percolation theory can provide some truly interesting mathematics and insight I'm sure I will visit some of these topics in a later blog post.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><a class="u-url" href="/percolation" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>A blog about maths, probability, modelling and computing.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/lewiscoleblog" title="lewiscoleblog"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/jazzcoffeestuff" title="jazzcoffeestuff"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
