@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Entropy and Complex Systems | Lewis Cole Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Entropy and Complex Systems" />
+<meta name="author" content="Lewis Cole (2020)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this blog post we will look at entropy in 3 classical settings: Thermodynamics, Information Theory and Statistics. We will show that while under certain conditions they have the same functional form this is not true in general. Moreover we will look at how we can define entropy in relation to complex systems." />
+<meta property="og:description" content="In this blog post we will look at entropy in 3 classical settings: Thermodynamics, Information Theory and Statistics. We will show that while under certain conditions they have the same functional form this is not true in general. Moreover we will look at how we can define entropy in relation to complex systems." />
+<link rel="canonical" href="https://www.lewiscoleblog.com/entropy" />
+<meta property="og:url" content="https://www.lewiscoleblog.com/entropy" />
+<meta property="og:site_name" content="Lewis Cole Blog" />
+<meta property="og:image" content="https://github.com/lewiscoleblog/blog/raw/master/images/Entropy/entropy.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-05-04T00:00:00-05:00" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"In this blog post we will look at entropy in 3 classical settings: Thermodynamics, Information Theory and Statistics. We will show that while under certain conditions they have the same functional form this is not true in general. Moreover we will look at how we can define entropy in relation to complex systems.","@type":"BlogPosting","headline":"Entropy and Complex Systems","dateModified":"2020-05-04T00:00:00-05:00","datePublished":"2020-05-04T00:00:00-05:00","image":"https://github.com/lewiscoleblog/blog/raw/master/images/Entropy/entropy.jpg","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/entropy"},"url":"https://www.lewiscoleblog.com/entropy","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://www.lewiscoleblog.com/feed.xml" title="Lewis Cole Blog" /><link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Entropy and Complex Systems | Lewis Cole Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Entropy and Complex Systems" />
+<meta name="author" content="Lewis Cole (2020)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this blog post we will look at entropy in 3 classical settings: Thermodynamics, Information Theory and Statistics. We will show that while under certain conditions they have the same functional form this is not true in general. Moreover we will look at how we can define entropy in relation to complex systems." />
+<meta property="og:description" content="In this blog post we will look at entropy in 3 classical settings: Thermodynamics, Information Theory and Statistics. We will show that while under certain conditions they have the same functional form this is not true in general. Moreover we will look at how we can define entropy in relation to complex systems." />
+<link rel="canonical" href="https://www.lewiscoleblog.com/entropy" />
+<meta property="og:url" content="https://www.lewiscoleblog.com/entropy" />
+<meta property="og:site_name" content="Lewis Cole Blog" />
+<meta property="og:image" content="https://github.com/lewiscoleblog/blog/raw/master/images/Entropy/entropy.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-05-04T00:00:00-05:00" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"In this blog post we will look at entropy in 3 classical settings: Thermodynamics, Information Theory and Statistics. We will show that while under certain conditions they have the same functional form this is not true in general. Moreover we will look at how we can define entropy in relation to complex systems.","@type":"BlogPosting","headline":"Entropy and Complex Systems","dateModified":"2020-05-04T00:00:00-05:00","datePublished":"2020-05-04T00:00:00-05:00","image":"https://github.com/lewiscoleblog/blog/raw/master/images/Entropy/entropy.jpg","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/entropy"},"url":"https://www.lewiscoleblog.com/entropy","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://www.lewiscoleblog.com/feed.xml" title="Lewis Cole Blog" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Lewis Cole Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/welcome/">Welcome</a><a class="page-link" href="/search/">Search</a><a class="page-link" href="/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Entropy and Complex Systems</h1><p class="page-description">In this blog post we will look at entropy in 3 classical settings: Thermodynamics, Information Theory and Statistics. We will show that while under certain conditions they have the same functional form this is not true in general. Moreover we will look at how we can define entropy in relation to complex systems.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-05-04T00:00:00-05:00" itemprop="datePublished">
+        May 4, 2020
+      </time>• 
+          <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name">Lewis Cole (2020)</span></span>
+       <!-- • <span class="read-time" title="Estimated read time">
+    
+    
+      18 min read
+    
+</span>-->
+    </p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/categories/#Entropy">Entropy</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Thermodynamics">Thermodynamics</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Information-Theory">Information-Theory</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Statistics">Statistics</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Theory">Theory</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Probability">Probability</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Complexity">Complexity</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Complex-Systems">Complex-Systems</a>
+        
+      
+      </p>
+    
+
+    
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Entropy-Thermodynamics-and-Statistical-Mechanics">Entropy Thermodynamics and Statistical Mechanics </a></li>
+<li class="toc-entry toc-h2"><a href="#Entropy-in-Information-Theory">Entropy in Information Theory </a></li>
+<li class="toc-entry toc-h2"><a href="#Statistical-Inference">Statistical Inference </a></li>
+<li class="toc-entry toc-h2"><a href="#Equivalence-of-Entropy">Equivalence of Entropy </a></li>
+<li class="toc-entry toc-h2"><a href="#Entropy-and-Complexity">Entropy and Complexity </a></li>
+<li class="toc-entry toc-h2"><a href="#Conclusion">Conclusion </a></li>
+<li class="toc-entry toc-h2"><a href="#References">References </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-05-04-Entropy.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In this blog post we shall be looking at the concept of "entropy" which appears under a number of guises. We will look at a number of areas in which entropy arises and look at similiarities and differences. In the interests of brevity this will be a whistle-stop tour of each area and we will not cover all the details. Each area has enough results/theorems/etc. to cover a series of blog posts by themselves. In this blog post we are simply concerned with the concept of entropy.</p>
+<p>(Note: This blog post follows the research by Rudolf Hanel and Stefan Thurner and in particular the first half of the 6th chapter of the book: "Inroduction to the Theory of Complex Systems" by Stefan Thurner, Rudolf Hanel and Peter Klimek)</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Entropy-Thermodynamics-and-Statistical-Mechanics">
+<a class="anchor" href="#Entropy-Thermodynamics-and-Statistical-Mechanics" aria-hidden="true"><span class="octicon octicon-link"></span></a>Entropy Thermodynamics and Statistical Mechanics<a class="anchor-link" href="#Entropy-Thermodynamics-and-Statistical-Mechanics"> </a>
+</h2>
+<p>When we mention "entropy" what many people first think of is a measure of "disorder" or "uncertainty" of a system. We imagine a system whereby an individual configuration is called a microstate. A microstate can be associated with a global behaviour called a macrostate. For each macrostate if we take (the logarithm of) the number of microstates that lead to the macrostate then we have the "entropy" quantity (Boltzmann entropy). A macrostate that has more generating microstates is considered to be more "disordered". To take a simple example taking water ($H_2 O$) in solid (ice) form the individual molecules are (somewhat) forced into position in the crystaline structure, as such there are relatively few different orientations of molecules and hence a low entropy. As we move into the liquid phase the molecules move around more freely and so there are many more positions which the molecules can take, leading to a higher entropy. In the gaseous phase the molecules are whizzing around with higher energies and even more orientations are possible and so the entropy increases yet further.</p>
+<p>The first definition of entropy comes from Rudolf Clausius in the mid 1800s through work in thermodynamics. He asserts that internal energy ($U$), temperature ($T$), pressure ($P$) and volume ($V$) are related via entropy ($S$) as:
+
+$$ dU = T dS - P dV $$
+
+Through this definition we find that entropy is a way of relating the macroscopic behaviours of a system. This holds for reversible processes that are quasi-stationary (essentially: there can be an absorbing state that we reach almost-surely but initial conditions are such that the system will take a long time to reach it). We sometimes re-arrange this formulation slightly to give:
+
+$$\frac{dQ}{T} = dS$$
+
+Where $Q$ is the heat added/removed to/from the system. There are a couple of extra properties we require of entropy, firstly it must be additive. If for example we take 2 identical systems and combine them the entropy must double, in other words:
+
+$$ S_{A+B} = S_A + S_B $$
+
+For systems $A$ and $B$. Also we have that the second law of thermodynamics must hold - that is: for a closed system entropy must never be decreasing:
+
+$$dS \geq 0$$
+
+Which means if we know the macrostate at a given time then the state at a later time must be of equal or higher entropy. Moreover if the closed system is in equilibrium: $dS = 0$.</p>
+<p>Another definition of entropy via statistical mechanics is:
+
+$$ S_B = k_B log \Omega $$
+
+Where $k_B$ is a unit-correcting constant and $\Omega$ is the number of microstates consistent with a macrostate. If the microstates are not equally probable we can use the Gibbs-Boltzmann form of entropy:
+
+$$S_B = -k_b \sum_i p_i ln p_i $$
+
+This can be shown to be equivalent to Clausius entropy by invoking the Boltzmann distribution, that is:
+
+$$ p_i = \frac{1}{Z} exp\left( \frac{-E_i}{k_B T} \right) $$
+
+Where $E_i$ is the energy corresponding to the microstate, $T$ is the temperature and $Z$ is the partition function (normalizing constant).</p>
+<p>To show the equivalency between Gibbs-Boltzmann and Clausius entropy formulations:
+\begin{align}
+dS_B &amp;= -k_b \sum_i dp_i (ln p_i)  \\
+     &amp;= -k_b \sum_i dp_i \left(\frac{-E_i}{k_B T} - lnZ\right) \\
+     &amp;= \sum_i \frac{E_i dp_i}{T} \\
+     &amp;= \sum_i \frac{d(E_i p_i) - (dE_i)p_i}{T} \\
+     &amp;= \frac{dE - dW}{T} \\
+     &amp;= \frac{dQ}{T}
+\end{align}
+Which is equivalent to above. In the last line we used the first law of thermodynamics: $dE = dW + dQ$ - the change in energy is the work done plus the change in heat. We also used $\sum d(E_i p_i) = dE$ (average energy) and $\sum d(E_i)p_i = dW$ (work done). For this to hold we require that the system is in a thermal equilibrium.</p>
+<p>This equivalence is quite an impressive and powerful result, we now have a mechanism by which we can relate the macrostates of a system to the microstates - that is we habe a link between the mircoscopic behaviour (particle behaviour) to macroscopic behaviour (phase of matter). The key assumption however is that the system is in <strong>equilibrium</strong>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Entropy-in-Information-Theory">
+<a class="anchor" href="#Entropy-in-Information-Theory" aria-hidden="true"><span class="octicon octicon-link"></span></a>Entropy in Information Theory<a class="anchor-link" href="#Entropy-in-Information-Theory"> </a>
+</h2>
+<p>Another area where entropy appears is in information theory. Put very simply information theory is concerned with the problem of encoding messages and how much information is required to encode a message so that it can be decoded again with a certian level of accuracy. If we know what messages we want to send and a noise-rate then we can work out what capacity of channel we would require.</p>
+<p>In the context of information theory entropy is the term used to quantify "uncertainty" in a message/signal. High entropy represents a large uncertainty and vice versa. Typically this is taken to be the Shannon entropy:
+
+$$ S_S = - \sum_i p_i ln p_i $$
+
+Which looks somewhat familiar now we have looked at Boltzmann entropy ($S_B$) however we should note these represent fundamentally different things and any resemblance is merely coincidence.</p>
+<p>Why is Shannon entropy a good measure in this setting? Let's consider an example where we have $N$ signals with associated probabilites: $(p_1, p_2, ... , P_N)$. If we have a determinstic case: $(p_1=1, p_2=0,...,p_N=0)$ then the Shannon entropy is zero. Noting: 
+
+$$\lim_{x \to 0} xlnx = 0$$
+
+and 
+
+$$1ln1=0$$
+
+But also we can see that Shannon entropy is maximised for $p_i = \frac{1}{N}$ - uniform distribution. This fits with our notion of "maximum uncertainty". We also have for two systems $(A=(p_1, p_2, ... , P_N), B=(q_1, q_2, ..., Q_M)$ then:
+
+$$S_S(AB) = S_S(A) + S_S(B | A) $$
+
+Where $(B|A)$ represents the distribution of $B$ conditional on $A$ - if $A$ and $B$ are fully independent then $(B|A)=B$ (for example flipping two coins, the probability of heads on one coin will not impact the probability of heads on the other - unless you taped the coins together or something equally silly).</p>
+<p>By defining entropy in this way we can derive Shannon's noisy channel theorem (we will not prove this here) in layman's terms this states that: "we can create a coding scheme for a message that allows it to be transmitted (essentially) error free if the information capacity of the channel is greater than the source entropy." We have been a little sloppy in not defining all the terms here but we only need the gist for our purposes. We can see that the entropy is an important concept.</p>
+<p>However, we have not applied any restriction to our "source" of the signals/messages. Since we are dealing with uncertainty we typically rely on a probabilistic description. Further for the statement above to hold for $S_S$ we require the information source process to be:</p>
+<ol>
+<li>Markov</li>
+<li>Ergodic
+The first criteria states that the next signal to be sent depends only on the current signal, not the entire history of sent signals. The second criteria ensures that the process exhibits stationarity (rates for individual signals do not vary in time) and moreover there is no state we can start a trajectory in that makes it impossible to reach any other state. This assumption underlies most of the classic information theory results.</li>
+</ol>
+<p>However Shannon also proposed 3 axioms (SK1, SK2, SK4) representing fundamental requirements that an entropy measure $S(p)$ should have for dealing with <strong>Markov-Ergodic</strong> ("simple") information sources. Later Khinchin added a 4th (SK3).</p>
+<ul>
+<li>SK1. - Entropy $S(p)$ must be continuous and depend only on arguments $p_i$ - probability of individual states and nothing else</li>
+<li>SK2. - $S(p)$ must take it's maximum for $p_i = \frac{1}{N}$</li>
+<li>SK3. - Adding an additional state with zero probability does not change the entropy value</li>
+<li>SK4. - The composition of 2 systems should result in: $S(AB) = S(A) + S(B|A)$ - if the systems are fully independent this becomes $S(AB) = S(A) + S(B)$</li>
+</ul>
+<p>Using these axioms we find that any functional $S(p)$ satisfying these axioms must be of the form:
+
+$$ S(p) = - k \sum_i p_i ln p_i $$
+
+Which is nothing more than Shannon entropy upto a multiplicative constant.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Statistical-Inference">
+<a class="anchor" href="#Statistical-Inference" aria-hidden="true"><span class="octicon octicon-link"></span></a>Statistical Inference<a class="anchor-link" href="#Statistical-Inference"> </a>
+</h2>
+<p>In statistical inference we are trying to answer the question: what is the best model that captures some data? Or given some model what is the most likely outcome? There are a number of methods we can use to do this, one of which is the "maximum entropy principle" which loosely states that the distribution with the highest entropy given our current data is our "best guess" for the distribution that generated it. This was originally popularized by Jaynes in the late 1950s.</p>
+<p>To illustrate the method let's imagine that we have $N$ possible states of a system. We have observations $k=(k_1, k_2, ... , k_N)$ for how often each has occured in our data. The process generating the data has "true" distribution $q=(q_1, q_2, ... , q_N)$ with $\sum_i q_i = 1$. We then have the probability of our observation (assuming independence) following a multinomial distribution:
+
+$$P(k|q) = \frac{N!}{k_1! k_2!...k_N!} q_1^{k_1} q_2^{k_2} ... q_N^{k_N}$$
+
+Which we notice we can factorize as:
+
+$$ P(k|q) = M(k) G(k|q) $$
+
+With:
+\begin{align}
+M(k) &amp;= \frac{N!}{k_1! k_2!...k_N!} \\
+G(q|k) &amp;= q_1^{k_1} q_2^{k_2} ... q_N^{k_N}
+\end{align}
+We call the function $M(k)$ the multiplicity, and $G(q|k)$ the probability. If we take logarithms and divide by N this formula becomes:
+
+$$ \frac{1}{N} ln P(k|q) = \frac{1}{N} ln M(k) + \frac{1}{N} ln G(q|k) $$
+
+Where the left hand side of the equation is called the relative entropy (or Kullback-Leibler divergence). The right hand term containing $M(k)$ is called the entropy and the final term the cross entropy. Via Stirling's approximation we have:
+
+$$M(k) \approx \frac{N^N}{k_1^{k_1}k_2^{k_2}...k_N^{k_N}}$$
+
+If we denote the sample average:
+
+$$p_i = \frac{k_i}{N} $$
+
+Then via Stirling:
+
+$$ S_J = \frac{1}{N} ln M(k) = - \sum_i p_i ln p_i $$
+
+Which is the (now familiar) entropy funcational. We can also substitute $p_i$ into the formula above, in a similar way we can relate the relative entropy, entropy and cross entropy via:
+
+$$ - \sum_i p_i ln \frac{p_i}{q_i} = - \sum_i p_i ln p_i + \sum_i p_i ln q_i $$
+
+We can make the assumption $q_i = exp^{-\alpha - \beta \epsilon_i}$. And then:
+
+$$ \frac{1}{N} ln P(k|q) = - \sum_i p_i ln p_i - \alpha \sum_i p_i - \beta \sum_i p_i \epsilon_i $$
+
+By differentiating and setting to zero we end up with a set of equations we can solve for $p^*_i$ that is the maximum entropy distribution:
+
+$$ 0 = \frac{\partial}{\partial p_i} ln P(k|q) = \frac{\partial}{\partial p_i}  \left(- \sum_i p_i ln p_i - \alpha \sum_i p_i - \beta \sum_i p_i \epsilon_i  \right)  $$
+
+The constants $\alpha$ and $\beta$ represent Lagrangian multipliers here, $\alpha$ ensures normalization of $p_i$ and $\beta$ ensures the first moment (mean) is correct. If we have additional information (e.g. we know higher order moments) we can build this in via additional Lagrangian multipliers.</p>
+<p>We can see that entropy in this sense has the same functional as before. The key assumption however is that the process is <strong>multinomial</strong>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Equivalence-of-Entropy">
+<a class="anchor" href="#Equivalence-of-Entropy" aria-hidden="true"><span class="octicon octicon-link"></span></a>Equivalence of Entropy<a class="anchor-link" href="#Equivalence-of-Entropy"> </a>
+</h2>
+<p>We have now seen 3 classic examples of where the term entropy is used - the Boltzmann, Shannon and Jaynes entropy functionals. Since the functionals are identical (upto a multiplicative constant) it is natural for us to consider them equivalent. This is a mistake, although they are all called "entropy" and have the same form they represent different things.</p>
+<p>It is worth noting that for each energy functional to make sense we make some pretty cavalier assumptions about the underlying systems:</p>
+<ol>
+<li>Boltzmann entropy assumes a process is in <strong>equilibrium</strong>
+</li>
+<li>Shannon entropy assumes an <strong>ergodic</strong> process</li>
+<li>Jaynes entropy assumes a <strong>multinomial</strong> process</li>
+</ol>
+<p>But what happens if we remove these assumptions?</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Entropy-and-Complexity">
+<a class="anchor" href="#Entropy-and-Complexity" aria-hidden="true"><span class="octicon octicon-link"></span></a>Entropy and Complexity<a class="anchor-link" href="#Entropy-and-Complexity"> </a>
+</h2>
+<p>Complex systems by their nature do not follow the assumptions above. For example most complex systems are non-ergodic. In particular they may be "evolutionary" systems that show path dependent behaviour which violates ergodicity. They may also display long term "memory" of previous states, which again is non-ergodic. So what can we say in these cases?</p>
+<p>Using the Shannon-Khinchin axioms above we can see the most restrictive is $SK4$ - this is a requirement built off the properties of an ergodic system. What if we simply drop this axiom? Thurner-Hanel-et. al. have shown we can do a lot with the following axioms:</p>
+<ul>
+<li>SK1. - Entropy $S(p)$ must be continuous and depend only on arguments $p_i$ - probability of individual states and nothing else</li>
+<li>SK2. - $S(p)$ must take it's maximum for $p_i = \frac{1}{N}$</li>
+<li>SK3. - Adding an additional state with zero probability does not change the entropy value</li>
+<li>$S(p)$ takes a trace form: $S(p) = \sum_i g(p_i)$</li>
+</ul>
+<p>We can re-write these axioms further by taking the form: $S(p) = \sum_i g(p_i)$ and noting that:</p>
+<ul>
+<li>$g(.)$ must be continuous (by SK1)</li>
+<li>$g(.)$ must be concave (by SK2)</li>
+<li>$g(0) = 0$ (by SK3)</li>
+</ul>
+<p>If we define:
+
+$$ S_g(N) = \sum_i g\left( \frac{1}{N} \right) = N g\left( \frac{1}{N} \right) $$
+</p>
+<p>We can then elicit scaling behaviour:
+\begin{align}
+\lim_{N \to \infty} \frac{S_g(N \lambda)}{S_g(N)} &amp;= \lambda^{1-c} \\
+\lim_{N \to \infty} \frac{S_g(N^{1+a})}{S_g(N)N^{a(1-c)}} &amp;= (1+a)^d 
+\end{align}
+We can then see there are 2 constants that define scaling laws for entropy following this trace form. We have  $0 \leq c \leq 1$ and $d$ real valued. If $c&gt;1$ then SK2 is violated and if $c&lt;0$ SK3 is violated. Moreover it has been shown that an entropy funcitonal can be of the form:
+\begin{align}
+S_{c,d}(p) &amp;= \frac{r}{c} A^{-d} e^A \left( \sum_i \Gamma(1+d, A - c ln p_i) - rp_i \right) \\
+A &amp;= \frac{cdr}{1 - (1-c)r} \\
+\Gamma(a,b) &amp;= \int_b^{\infty} t^{a-1} e^{-t} dt 
+\end{align}
+Where $c$ and $d$ are the same as in the scaling properties above. There is an additional constant $r$ taking a range of values dependant on $c$ and $d$ to ensure the expression makes sense, it does not affect the scaling behaviour. We can thus use constants $c$ and $d$ to create equivalence classes of complex systems.</p>
+<p>(Note: the expression of $S_{c,d}$ is not unique and simpler expressions exist, however this is a general form that allows for the widest range of $c$ and $d$ values available).</p>
+<p>What happens if we take $c=1$ and $d=1$ as an example? Then $A=r$ and via some work (and the fact $\Gamma(2,x) = e^{-x}(x+1)$) we get:
+
+$$ S_{1,1}(p) = (r+1) - re^r - \sum_i p_i ln p_i $$
+
+Which we see as equivalent to the Boltzmann/Shannon/Jaynes entropy above (the additive constant non-withstanding which is a consequence of allowing SK4 to be relaxed - careful selection of $r$ can remove this constant).</p>
+<p>So far we have limited ourselves to a trace form function: $S_{c,d}(p) = \sum_i g_{c,d}(p_i)$ - however this is not a requirement. We can use entropy functionals that are not of trace form and still use the same $(c,d)$ criteria for equivalence classes. The table below shows some entropy functionals proposed and their equivalence class:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Name----------------------</th>
+<th style="text-align:left">Entropy-Functional-Form-----------------------------------------</th>
+<th style="text-align:center">------c------</th>
+<th style="text-align:center">--d--</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Boltzmann</td>
+<td style="text-align:left">$-\sum_i p_i ln p_i $</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:left">Reyni</td>
+<td style="text-align:left">$ \frac{1}{1-\alpha}ln \sum_i p_i^{\alpha} $</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:left">Tsallis</td>
+<td style="text-align:left">$ \frac{1 - \sum_i p_i^q}{q-1} $</td>
+<td style="text-align:center">$q$</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:left">Abe</td>
+<td style="text-align:left">$-  \frac{\sum_i p_i^q - p_i^{1/q}}{q - 1/q}$</td>
+<td style="text-align:center">$q$</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:left">Sharma-Mittal</td>
+<td style="text-align:left">$ - \sum_i p_i^r (p_i^{\kappa} - p_i^{-\kappa}) / 2\kappa $</td>
+<td style="text-align:center">$r-\kappa$</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:left">Landsber-Vedral</td>
+<td style="text-align:left">$\left( \left( \sum_i p_i^q \right)^{-1} - 1 \right) / (q-1)$</td>
+<td style="text-align:center">$2-q$</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:left">Exponential</td>
+<td style="text-align:left">$\sum_i p_i \left( 1 - e^{ \frac{p_i-1}{p_i}} \right) $</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:left">Anteonodo-Plastino</td>
+<td style="text-align:left">$\sum_i \left( \Gamma \left( \frac{\eta+1}{\eta}, -lnp_i \right) -p_i \Gamma \left( \frac{\eta+1}{\eta} \right) \right)$</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">$\frac{1}{\eta}$</td>
+</tr>
+<tr>
+<td style="text-align:left">Shafee</td>
+<td style="text-align:left">$-\sum_i p_i^{\beta} lnp_i$</td>
+<td style="text-align:center">$\beta$</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:left">Hanel-Thurner</td>
+<td style="text-align:left">$\frac{r}{c} A^{-d} e^A \left( \sum_i \Gamma(1+d, A - c ln p_i) - rp_i \right)$</td>
+<td style="text-align:center">c</td>
+<td style="text-align:center">d</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>From this we can see that equivalence classes can contain functionals that appear very different from each-other. For example with the right choice of parameter Landsber-Vedral displays the same scaling as  the Sharma-Mittal.</p>
+<p>For any trace form of entropy we can denote the generalized logarithm of that entropy as:
+
+$$ \Lambda(p_i) = - \frac{d}{dp_i} g(p_i) $$
+</p>
+<p>We can apply scaling to $g$ to ensure $\Lambda(1) = 0$ and $\Lambda ' (1) = 1$ (this does not change the equivalence class of the entropy functional). This determines the probability distribution function of the system via:
+
+$$p(x) = \Lambda^{-1}(-x) $$
+</p>
+<p>Given:
+$$S_{c,d}(p) = \frac{r}{c} A^{-d} e^A \left( \sum_i \Gamma(1+d, A - c ln p_i) - rp_i \right)$$ 
+Then:
+
+$$\Lambda_{c,d,r}(x) = r \left( 1 - x^{c-1} \left(1 - \frac{1-(1-c)r}{dr} ln(x) \right)^d \right) $$
+
+Which we can invert to give:
+
+$$ p_{c,d,r}(x) \sim exp \left( -\frac{d}{1-c} W_k \left( \frac{(1-c)r}{1-(1-c)r} exp \left(\frac{(1-c)r}{1-(1-c)r}\right) \left(1 + \frac{x}{r}\right)^{\frac{1}{d}} \right) \right) $$
+
+Where $W_k$ is the Lambert-W function, which only has real solutions for $k=0$ ($d\geq 0$) or $k=-1$ ($d &lt; 0$).</p>
+<p>By taking $c=d=r=1$ we regain the Boltzmann distribution:
+
+$$p_{1,1,1}(x) = e^{-x}$$
+</p>
+<p>Similarly for $c=1$ and we have a stretched exponential distribution:
+
+$$p_{1,d,r}(x) = e^{-dr\left(\left(1+ \frac{x}{r}\right)^{\frac{1}{d}}-1\right)}$$
+</p>
+<p>For $d=0$ and $r=\frac{1}{1-c}$ we hae a power-law:
+
+$$p_{c,0,r} = (1+(1-c)x)^{\frac{-1}{1-c}}$$
+</p>
+<p>In general we find that the distribution functions will look very similar to the power-law case. This demonstrates the uniquity of power-law relations in non-ergodic systems.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Conclusion">
+<a class="anchor" href="#Conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion<a class="anchor-link" href="#Conclusion"> </a>
+</h2>
+<p>In this blog post we have seen that the 3 "classic" uses of entropy (Boltzmann, Shannon and Jaynes) are in fact distinct despite having the same functional form. This leads to much confusion. Moreover we have seen that the degeneracy in functional form arises out of some pretty strong assumptions on the underlying process namely: <strong>equilibrium</strong>, <strong>Markov-Ergodicity</strong> and <strong>multinomial distributions</strong>. For some systems these assumptions are either true or reasonable approximations of reality, however in some cases these aren't good assumptions and using a Boltzmann entropy functional is asking for trouble.</p>
+<p>We also looked at the Shannon-Khinchin axioms for defining a "good" entropy function. We saw that by dropping $SK4$ we were no longer bound to Ergodicity. As such we considered the scaling behaviour of an entropy functional and found 2 key forms of scaling $c$ and $d$, which we could use to create equivlance classes of entropy functionals and non-Ergodic systems.</p>
+<p>By further assuming a trace form ($S(p) = \sum_i g(p_i)$) of entropy functional we found a general form for the entropy functional. By taking the generalized logarithm of this function we find that the distribution function for the system must follow a Lambert-W exponential form. For all intents and purposes this leads to power-law behaviour which acts as justification for the ubiquity of power-laws in non-Ergodic systems.</p>
+<p>In this blog we talk about "modelling" a lot. The result that non-Ergodic systems follow a distribution that is (at least somewhat like) a power-law suggests that our default modelling assumption for statistical systems should be a power-law type distribution unless we can specifically prove otherwise.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<h2 id="References">
+<a class="anchor" href="#References" aria-hidden="true"><span class="octicon octicon-link"></span></a>References<a class="anchor-link" href="#References"> </a>
+</h2>
+<p>Most of the work in this area (that I know about) is from Stefan Thurner and Rudolf Hanel. Some suggested reading is:</p>
+<ol>
+<li>Introduction to the Theory of Complex Systems - Thurner, Hamel, Klimek  (This blog post follows the first half of chapter 6 of this book)</li>
+<li>
+<a href="https://arxiv.org/abs/1310.5959">https://arxiv.org/abs/1310.5959</a> - Generalized (c,d)-entropy and aging random walks - Hanel, Thurner</li>
+<li>
+<a href="https://arxiv.org/abs/1211.2257">https://arxiv.org/abs/1211.2257</a> - Generalized entropies and logarithms and their duality relations - Hanel, Thurner, Gell-Mann</li>
+<li>
+<a href="https://arxiv.org/abs/1005.0138">https://arxiv.org/abs/1005.0138</a> - A comprehensive classification of complex statistical systems - Hanel, Thurner</li>
+<li>
+<a href="https://arxiv.org/pdf/1705.07714.pdf">https://arxiv.org/pdf/1705.07714.pdf</a> - The three faces of entropy for complex systems - Thurner, Corominas-Murtra, Hanel</li>
+</ol>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><a class="u-url" href="/entropy" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>A blog about maths, probability, modelling and computing.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/lewiscoleblog" title="lewiscoleblog"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/jazzcoffeestuff" title="jazzcoffeestuff"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
