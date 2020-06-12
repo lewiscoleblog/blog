@@ -147,7 +147,11 @@ window.onload = wrap_img;
 
   <div class="post-content e-content" itemprop="articleBody">
     <ul class="section-nav">
-<li class="toc-entry toc-h2"><a href="#What-is-a-Monte-Carlo-Method?">What is a Monte-Carlo Method? </a></li>
+<li class="toc-entry toc-h2"><a href="#What-is-a-Monte-Carlo-Method?">What is a Monte-Carlo Method? </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Why-is-it-called-Monte-Carlo?">Why is it called Monte-Carlo? </a></li>
+</ul>
+</li>
 <li class="toc-entry toc-h2"><a href="#Generating-Pseudo-Random-Number-Generators">Generating Pseudo Random Number Generators </a>
 <ul>
 <li class="toc-entry toc-h3"><a href="#Desired-Properties">Desired Properties </a></li>
@@ -325,6 +329,10 @@ window.onload = wrap_img;
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Again this is a very dumb algorithm that (outside of an interview) nobody would ever use. We can see that we have used "random numbers" as provided by numpy. As it is coded every time we run this code we would end up with a different estimate (for a given number of simulated points) - in some cases this may be useful and in others a problem.</p>
 <p>We notice that the procedure in the Monte-Carlo estimate of $\pi$ is fundamentally different to the Riemann approach. Since both algorithms are so dumb we won't comment on which is more efficient. However we can notice that the Monte-Carlo approach is slightly "simpler" and the determistic approach requires slightly more finesse and understanding of the area (i.e. we use the concavity of the circle to say that if all corners of the square are within the circle then the entire square is within the circle) - while this is simple in this scenario it doesn't take much of a leap to realise that in more complicated scenarios we may be in trouble. This is true in general and is one of the selling points of Monte-Carlo methods; it is generally (relatively) easy to implement a method even when there are no analytic solutions to the problem!</p>
+<h3 id="Why-is-it-called-Monte-Carlo?">
+<a class="anchor" href="#Why-is-it-called-Monte-Carlo?" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why is it called Monte-Carlo?<a class="anchor-link" href="#Why-is-it-called-Monte-Carlo?"> </a>
+</h3>
+<p>Monte-Carlo techniques were first used in designing the atomic bomb. The physicists settled on the name "Monte-Carlo" (I believe) due to the number of casinos in Monte Carlo, Monaco. The earliest mathematical-probabilists were all gamblers, they were studying games of chance (most likely to look for easy money!) - Monte-Carlo seems to be a fitting tribute to those early practitioners!</p>
 <p>We can see now that Monte-Carlo methods rely heavily on random numbers. We now take a brief trip into the world of simulating random numbers.</p>
 
 </div>
