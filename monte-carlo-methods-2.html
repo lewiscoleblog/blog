@@ -692,6 +692,11 @@ $$ \mathbf{X} = \frac{\mathbf{Z}}{\sqrt{\frac{\chi_{\nu}}{\nu}}}$$
 $$\lambda_u = \lambda_l = 2 t_{\nu+1} \left(- \frac{\sqrt{\nu+1}\sqrt{1-\rho}}{\sqrt{1+\rho}} \right) &gt; 0$$
 </p>
 <p>We can see that even if we specify $\rho=0$ there will be some level of tail-dependence between the variates. In fact it is impossible to enforce independence between variables using the student-t copula. This can be an issue in some instances but there are extensions we can make to overcome - for example see my <a href="https://lewiscoleblog.com/insurance-aggregation-model">insurance aggregation model</a>.</p>
+<p>Another interesting property of the student-t copula is that it also has "opposing" tail dependency. Namely:</p>
+<p>
+$$\lim _{q\rightarrow 0}\mathbb{P} (X_{2}\leq F_{2}^{-1}(q)\mid X_{1} &gt; F_{1}^{-1}(1-q)) = \lim _{q\rightarrow 0}\mathbb{P} (X_{2}&gt;F_{2}^{-1}(1-q)\mid X_{1} \leq F_{1}^{-1}(q)) = 2 t_{\nu+1} \left(- \frac{\sqrt{\nu+1}\sqrt{1+\rho}}{\sqrt{1-\rho}} \right) &gt; 0$$
+</p>
+<p>This gives rise to the familiar "X" shape of a joint student-t scatter plot.</p>
 
 </div>
 </div>
