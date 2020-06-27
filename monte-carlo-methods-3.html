@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Monte Carlo Methods 3: Vine Copula Methods | Lewis Cole Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Monte Carlo Methods 3: Vine Copula Methods" />
+<meta name="author" content="Lewis Cole (2020)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this blog post we extend the copula ideas from the previous blog post to create the vine copula." />
+<meta property="og:description" content="In this blog post we extend the copula ideas from the previous blog post to create the vine copula." />
+<link rel="canonical" href="https://www.lewiscoleblog.com/monte-carlo-methods-3" />
+<meta property="og:url" content="https://www.lewiscoleblog.com/monte-carlo-methods-3" />
+<meta property="og:site_name" content="Lewis Cole Blog" />
+<meta property="og:image" content="https://github.com/lewiscoleblog/blog/raw/master/images/Monte-Carlo/copula.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-05-25T00:00:00-05:00" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"In this blog post we extend the copula ideas from the previous blog post to create the vine copula.","@type":"BlogPosting","headline":"Monte Carlo Methods 3: Vine Copula Methods","dateModified":"2020-05-25T00:00:00-05:00","datePublished":"2020-05-25T00:00:00-05:00","image":"https://github.com/lewiscoleblog/blog/raw/master/images/Monte-Carlo/copula.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/monte-carlo-methods-3"},"url":"https://www.lewiscoleblog.com/monte-carlo-methods-3","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://www.lewiscoleblog.com/feed.xml" title="Lewis Cole Blog" /><link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Monte Carlo Methods 3: Vine Copula Methods | Lewis Cole Blog</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Monte Carlo Methods 3: Vine Copula Methods" />
+<meta name="author" content="Lewis Cole (2020)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this blog post we extend the copula ideas from the previous blog post to create the vine copula." />
+<meta property="og:description" content="In this blog post we extend the copula ideas from the previous blog post to create the vine copula." />
+<link rel="canonical" href="https://www.lewiscoleblog.com/monte-carlo-methods-3" />
+<meta property="og:url" content="https://www.lewiscoleblog.com/monte-carlo-methods-3" />
+<meta property="og:site_name" content="Lewis Cole Blog" />
+<meta property="og:image" content="https://github.com/lewiscoleblog/blog/raw/master/images/Monte-Carlo/copula.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-05-25T00:00:00-05:00" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Lewis Cole (2020)"},"description":"In this blog post we extend the copula ideas from the previous blog post to create the vine copula.","@type":"BlogPosting","headline":"Monte Carlo Methods 3: Vine Copula Methods","dateModified":"2020-05-25T00:00:00-05:00","datePublished":"2020-05-25T00:00:00-05:00","image":"https://github.com/lewiscoleblog/blog/raw/master/images/Monte-Carlo/copula.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.lewiscoleblog.com/monte-carlo-methods-3"},"url":"https://www.lewiscoleblog.com/monte-carlo-methods-3","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://www.lewiscoleblog.com/feed.xml" title="Lewis Cole Blog" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Lewis Cole Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/welcome/">Welcome</a><a class="page-link" href="/search/">Search</a><a class="page-link" href="/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Monte Carlo Methods 3: Vine Copula Methods</h1><p class="page-description">In this blog post we extend the copula ideas from the previous blog post to create the vine copula.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-05-25T00:00:00-05:00" itemprop="datePublished">
+        May 25, 2020
+      </time>• 
+          <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name">Lewis Cole (2020)</span></span>
+       <!-- • <span class="read-time" title="Estimated read time">
+    
+    
+      17 min read
+    
+</span>-->
+    </p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/categories/#Monte-Carlo">Monte-Carlo</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Statistics">Statistics</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Probability">Probability</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Computational-Statistics">Computational-Statistics</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Theory">Theory</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Computation">Computation</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Copula">Copula</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#Vine-Copula">Vine-Copula</a>
+        
+      
+      </p>
+    
+
+    
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Problems-with-the-Copula-Method">Problems with the Copula Method </a></li>
+<li class="toc-entry toc-h2"><a href="#Vine-Copula">Vine Copula </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Regular-Vines">Regular Vines </a></li>
+<li class="toc-entry toc-h3"><a href="#Dependency-Between-Discrete-Variables">Dependency Between Discrete Variables </a></li>
+<li class="toc-entry toc-h3"><a href="#Sampling-from-Regular-Vines">Sampling from Regular Vines </a>
+<ul>
+<li class="toc-entry toc-h4"><a href="#Sampling-the-D-Vine">Sampling the D-Vine </a>
+<ul>
+<li class="toc-entry toc-h5"><a href="#Inverse-Transform-Method">Inverse Transform Method </a></li>
+<li class="toc-entry toc-h5"><a href="#Acceptance-Rejection-Method">Acceptance-Rejection Method </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h4"><a href="#Generic-Sampling-Method">Generic Sampling Method </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h3"><a href="#Vine-Copula-packages">Vine-Copula packages </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#Conclusion">Conclusion </a></li>
+<li class="toc-entry toc-h2"><a href="#References">References </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-05-25-Monte-Carlo-Methods-3.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<p>This is the third blog post in a series - you can find the previous blog post <a href="https://lewiscoleblog.com/monte-carlo-methods-2">here</a></p>
+<hr>
+<p>In this blog post we continue to look at the problem of sampling from multi-variate distributions. Recall from the previous blog post that a copula $C(.)$ is a multivariate function:</p>
+<p>
+$$ C(U_1, \, ... \, , U_N) = \mathbb{P}(X_1 \leq F_1(U_1), \, ... \, , X_N \leq F_N(U_N)) $$
+</p>
+<p>We note that this defines a multivariate CDF. We can find the corresponding density function (PDF) $c(.)$ in the usual way:</p>
+<p>
+$$ c(u_1, \, ... \, , u_N) = \frac{\partial^N}{\partial u_1 \, ... \, \partial u_N} C(u_1, \, ... \, , u_N) $$
+</p>
+<p>Using this representation of the copula we can denote the joint distribution density $f(.)$ via a factorization of the copula density above and the marginal densities $f_i(.)$ (with corresponding CDF $F_i(x_i)$) via:</p>
+<p>
+$$ \underbrace{f(x_1, \, ... \, x_N)}_\text{Joint density} = \underbrace{f_1(x_1) \, ... \, f_N(x_N)}_\text{Marginal density} \, \, \, \underbrace{c(F_1(x_1), \, ... \, ,F_N(x_N))}_\text{Copula density}$$
+</p>
+<p>This highlights the power of the copula method showing that in modelling we are able to separate the marginal and joint behaviours into independent parts.</p>
+<h2 id="Problems-with-the-Copula-Method">
+<a class="anchor" href="#Problems-with-the-Copula-Method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Problems with the Copula Method<a class="anchor-link" href="#Problems-with-the-Copula-Method"> </a>
+</h2>
+<p>Things are not as rosy as they seem however.  We can use data to inform the marginal density functions, this is well established and we have a wide number of techniques at our disposal. However the copula density remains problematic - in anymore than the bi-variate case we are unlikely to ever have enough data inform model selection and calibration. We thus have to rely quite heavily on "trial and error" to find the correct structure to use and furthermore calibrate the parameters of that structure to give the desired result.</p>
+<p>We also have issues in higher dimension copula based modelling. Typically an archimedean copula will not be suitable in high dimensions. For an archimedean copula to be used it typically the generator needs to be well understood mathematically which results in only a handful being widely used. Of those used typically there will only be a handful of parameters and so they are not always flexible. For example the usual implemenation of the multi-variate Gumbel copula (used for modelling upper-tail dependence in high dimension) has a single parameter controlling the degree of tail dependence (and overall dependency) - this is not very useful where we think some subset of variables will be more strongly tied than others.</p>
+<p>As a result high-dimension multi-variate modelling typically relies on the joint-elliptical methods (typically the Gaussian/rank-normal or the student-t). In their standard forms these themselves have a number of issues:</p>
+<ul>
+<li>We need to specify an entire depedency matrix. This doesn't scale well with size and often adding a few new variables requires us to completely re-calibrate the matrix from scratch in order to ensure sensible behaviour, positive definite-ness and so on</li>
+<li>The Gaussian shows no tail dependence and the standard student-t copula allows only for 1 parameter controlling the tail dependence of all variables</li>
+<li>The tail dependence on the student-t is symmetrical which is not always desired</li>
+<li>With the student-t copula we cannot enforce independence</li>
+</ul>
+<p>To overcome this we can apply various techniques, generalizations and extensions to (at least partially) overcome the issues above (e.g. see my <a href="https://lewiscoleblog.com/insurance-aggregation-model">insurance aggregation model</a>). However these methods still lack the flexibility to model certain relations. For example suppose we have 3 variables $(X, Y, Z)$ we want to apply some dependence structure such that $X$ and $Y$ have a tie and $X$ and $Z$ have a tie - but given $Z$ then $X$ and $Y$ are independent. This can arise in various scenarios and yet it is very difficult to capture this through a joint-elliptical copula. We therefore require a more powerful method.</p>
+<h2 id="Vine-Copula">
+<a class="anchor" href="#Vine-Copula" aria-hidden="true"><span class="octicon octicon-link"></span></a>Vine Copula<a class="anchor-link" href="#Vine-Copula"> </a>
+</h2>
+<p>This is where the vine copula comes in. As with many computational statistical methods we want to produce a general tool that will work in a wide variety of situations. In the case of multi-variate sampling we want something that scales nicely with dimension. In order to do this we will look ot specify the dependency structure using a probabilistic graphical model (PGM).</p>
+<p>We will not get into all the details surrounding PGMs since that is a field of study all to itself. Instead we will just note that a graph such as that seen below:</p>
+<p><img src="https://github.com/lewiscoleblog/blog/raw/master/images/Monte-Carlo/PGM.png" alt="" title="An example PGM"></p>
+<p>Can be used to specify a joint density by factorising over cliques in the undirected graph:</p>
+<p>
+$$ f(X_A, X_B, X_C, X_D, X_E, X_F) = f_{ABC}(X_A, X_B, X_C) f_{CD}(X_C, X_D) f_{DEF}(X_D, X_E, X_F) $$
+</p>
+<p>We can note that this has more than a passing resemblence to our joint distribution decomposition using copulae above. The main crux of the vine copula is finding a decomposition of a copula using a graphical model, we can then specify individual copulae on each clique (e.g. in the example above clique $(A,B,C)$ could be defined with a rank-normal while clique $(C,D)$ via a gumbel, and so on). Of course this offers us tremendous flexibility, to the point of leading to option paralysis! Certain simplifications have been specified to aid this.</p>
+<p>In vine copulae the graphical model used is, as the name suggests, a vine (or cantor tree). By enforcing this requirement we bypass the need for worrying about loops and all the other technical gubbins that make working with graphical models generally quite difficult.</p>
+<p><img src="https://github.com/lewiscoleblog/blog/raw/master/images/Monte-Carlo/cantor-tree.png" alt="" title="A binary Cantor tree"></p>
+<h3 id="Regular-Vines">
+<a class="anchor" href="#Regular-Vines" aria-hidden="true"><span class="octicon octicon-link"></span></a>Regular Vines<a class="anchor-link" href="#Regular-Vines"> </a>
+</h3>
+<p>We start by defining vines in a more precise way. A vine $\mathcal{V}$ defined on $N$ variables is a nested set of connected trees: $\mathcal{V} = \{T_1 \, , \, ... \, , \, T_{N-1} \}$. The nodes of $T_{j+1}$ being the edges of $T_{j}$. A regular vine is a vine where two edges in $T_j$ are joined by an edge in $T_{j+1}$ only if the two edges share a common node. It is much easier to work with regular vines than non-regular vines. We can define this more formally:</p>
+<hr>
+<p><strong>Definition: Regular Vine</strong></p>
+<p>$\mathcal{V}$ is a regular vine on $N$ elements with edge set: $E(\mathcal{V}) = E_1 \cup E_2 \cup \, ... \, \cup E_{N-1}$ if:</p>
+<ol>
+<li>$\mathcal{V} = \{T_1 \, , \, ... \, , \, T_{N-1} \}$</li>
+<li>$T_1$ is a connected tree with nodes $N_1 = \{1 \, , \, ... \, , \, N-1 \}$ and edges $E_1$. For $i=2, ... N-1$ : $T_i$ is a tree with nodes $N_i = E_{i-1}$</li>
+<li>For $i=2, ... N-1$ : for $\{a,b\} \in E_i$ we have: $|a \triangle b| = 2$ for  $\triangle$ the symmetric difference operator</li>
+</ol>
+<hr>
+<p>We can further delineate regular vines into <strong>C-vines</strong> (canonical vines) where for each tree $T_i$ there is a unique node with $n-i$ connecting edges (degree) - this is the maximum degree for any node at that level. A regular vine is called a <strong>D-vine</strong> if all nodes in $T_1$ have a degree no higher than 2. Of course we can also have a vine that is not a C-vine nor a D-vine while still satisfies the definition above - we call these <strong>R-vines</strong>. In some sense an R-vine is "inbetween" a C-vine and a D-vine - the C-vine and D-vine being "boundary conditions" in some sense.</p>
+<p>It is often easier to see examples than battle with formal definitions (especially with PGMs) so lets look at an example in each class:</p>
+<p><img src="https://github.com/lewiscoleblog/blog/raw/master/images/Monte-Carlo/vines.png" alt="" title="Vine comparison"></p>
+<p>Alternatively we can look at the sequence of trees separately:</p>
+<p><img src="https://github.com/lewiscoleblog/blog/raw/master/images/Monte-Carlo/vine-trees.png" alt="" title="Vine trees"></p>
+<p>If we expressed this vine in the form from before it would look like:</p>
+<p><img src="https://github.com/lewiscoleblog/blog/raw/master/images/Monte-Carlo/vine-trees-example.png" alt=""></p>
+<p>We can also make some further definitions:</p>
+<hr>
+<p><strong>Defintion: Constraint Set, Conditioning Set, Conditioned Set</strong></p>
+<ol>
+<li>For $e \in E_i$ ($i \leq N-1$) the <strong>constraint set</strong> associated with $e$ is the complete union $U_e^*$ - the subset of $\{1, \, ... \, , N\}$ reachable from $e$ by the membership relation</li>
+<li>For $i \leq N-1$ and $e \in E_i$ : if $e=\{j, k\}$ then the <strong>conditioning set</strong> associated with $e$ is:
+
+$$ D_e = U_j^* \cap U_k^*$$
+
+ The <strong>conditioned set</strong> associated with $e$ is:
+
+$$ \{ C_{e,j} , C_{e,k} \} = \{ U_j^* \backslash D_e, U_k^* \backslash D_e \}$$
+</li>
+</ol>
+<hr>
+<p>In the example above the edge XXX has conditioning set XXX and conditioned set XXX - hence the choice of naming convention!</p>
+<p>For a regular vine $\mathcal{V} = \{T_1 \, , \, ... \, , \, T_{N-1} \}$ we have the following properties:</p>
+<ol>
+<li>The number of edges is $N(N-1)/2$</li>
+<li>Each pair of variables occurs exactly once as a conditioned set</li>
+<li>If two edges have the same conditioning set then they are the same edge</li>
+</ol>
+<p>The scaling of regular vines works as so:</p>
+<ol>
+<li>For any regular vine on $(N-1)$ elements there are $2^{N-3}$ choices of $N$-dimensional regular vine that extend it</li>
+<li>There are ${N \choose 2} (N-2)!2^{(N-2)(N-3)/2}$ labelled regular vines</li>
+</ol>
+<p>We can thus see that model selection for regular vine copula methods can quickly become unweildly. We often need to rely on sophisticated methods to do this (we will not discuss these here). We just note that we can set up "equivalence classes" of regular vines where two regular vines are in the same class if there is a permutation of the conditional distribution variables that maps one to the other. For example if $N=3$ then for a D-vine we have conditional distributions for: $\{ (1,2), (2,3), (1,3)|2 \}$ and for a C-vine we have: $\{ (1,2), (1,3), (2,3)|1 \}$ by taking permutation: $\pi(1,2,3)=(2,1,3)$ we have equivalence - that is C-vines and D-vines are equivalent for $N=3$ (of course this is not true in general).</p>
+<p>The real power of the regular vine copula comes through the following theorem from Bedford and Cooke (shown without proof).</p>
+<hr>
+<p><strong>Theorem:</strong></p>
+<p>Let $\mathcal{V} = \{T_1 \, , \, ... \, , \, T_{N-1} \}$ be a regular vine over $N$ elements. For any edge $e = \{e_1, e_2\} \in E(\mathcal{V})$ with conditioning set $D_e$, let a bivariate conditional copula be denoted: $C_{e_1,e_2 | D_e}$ with density: $c_{e_1,e_2 | D_e}$. Let marginal distributions be denoted as $F_i$ with corresponding densities $f_i$. Then the vine-dependent multivariate distribution is uniquely determined and has density:
+$$f_{X_1...X_N}(x_1,...x_N) = \left( \prod_{i=1}^N f_i(x_i) \right) \left( \prod_{e \in  E(\mathcal{V})} c_{e_1,e_2 | D_e} ( F_{e_1 | D_e}(x_{e_1}) , F_{e_2| D_e}(x_{e_2})) \right) $$</p>
+<hr>
+<p>Just as Sklar defined a bijection between multi-variate uniform distributions and copulae, this theorem does the equivalent for regular vine copulae. From before we know that we have many options for bivariate relations (for example we looked at the Gaussian, student-t, Frank, Clayton and Gumbel copulae in the previous blog post) - whereas multi-variate relations are harder to specify (with typically only Gaussian and student-t used in practice). The regular vine copula method allows us more flexibility in modelling multi-variate distributions. Moreover we can make use of conditioning arguments to help specify fairly specialised relations.</p>
+<p>Through construction we can notice the following properties:</p>
+<ul>
+<li>If each bivariate copula specified is of Gaussian type then resulting multi-variate copula is also a Gaussian. This also has the property that conditional correlation does not depend on the conditioning varibles. We find similar results for the student-t</li>
+<li>If edge $e = \{e_1, e_2 \} \in E_l$ with $l &gt; 1$. Then if copula $C_e$ is more concordant than $C_e'$ then the margin $F_e$ is more concordant than the margin $F_e'$</li>
+<li>Of $C_e$ has upper/lower tail ependence for all $e \in E_1$ and the remaining copulae have support in $[0,1]^2$ then all bivariate margins of the joint distribution have upper/lower tail dependence</li>
+<li>For parametric copulae $C_e(.; \theta_e)$ then each marginal copulae exists within the Frechet upper/lower bounds (see previous blog post for details)</li>
+</ul>
+<p>These points are a rather fancy way of saying that through the regular-vine construction we get a multi-variate distribution that behaves how we would like/expect.</p>
+<p>We also now take a brief diversion into the definition of a <strong>partial correlation</strong>.</p>
+<hr>
+<p><strong>Definition: Partial Correlation</strong></p>
+<p>Let $X_i$ be a variable with zero mean and unit variance. For $i=1,...,N$ define numbers: $b_{ij:\{1,...,,N\} \backslash \{i,j\}}$ that minimise:</p>
+<p>
+$$ \mathbb{E} \left[ \left( X_i - \sum_{j \neq i} b_{ij:\{1,...,,N\} \backslash \{i,j\}} X_j  \right)^2 \right]$$
+</p>
+<p>We then define the parital correlation coefficient: $\rho_{ij:\{1,...,,N\} \backslash \{i,j\}}$ as:</p>
+<p>
+$$ \rho_{ij:\{1,...,,N\} \backslash \{i,j\}} = \operatorname{sgn}\left(b_{ij:\{1,...,,N\} \backslash \{i,j\}}\right)\left(b_{ij:\{1,...,,N\} \backslash \{i,j\}} b_{j,i:\{1,...,,N\} \backslash \{i,j\}}\right)^{1/2} $$
+</p>
+<p>We can think of this as the correlation between the projections of $X_i$ and $X_j$ onto a plane orthogonal to the space spanned by all other variables. We can equivalently write this as:</p>
+<p>
+$$ \rho_{ij:\{1,...,,N\} \backslash \{i,j\}} = - \frac{K_{ij}}{\sqrt{K_{ii}K_{jj}}} $$
+</p>
+<p>Where $K_{ij}$ is the $(i,j)$th co-factor of the correlation matrix.</p>
+<hr>
+<p>There is nothing special about this definition that is unique to the vine copula methods we are describing. We could equally define this for any Gaussian or student-t or other elliptical multivariate distribution. For those a little rusty on their linear algebra the $(i,j)$th co-factor of a matrix is equal to the determinant of the matrix after removing the $i$th row and $j$th column multiplied by the factor: $(-1)^{i+j}$.</p>
+<p>We mention this here since we have the following theorem:</p>
+<hr>
+<p><strong>Theorem:</strong></p>
+<p>The regular vine provides a bijective mapping from $(-1,1)^{N \choose 2}$ to the set of positive definite matrices with $1$ diagonals (i.e. valid joint-elliptical correlation matrices)</p>
+<hr>
+<p>This means that we can use regular vines as a parameterization tool for joint elliptical (e.g. Gaussian) multi-variate distributions. We do this by specifying partial correlations on each edge in $E(\mathcal{V})$.</p>
+<h3 id="Dependency-Between-Discrete-Variables">
+<a class="anchor" href="#Dependency-Between-Discrete-Variables" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dependency Between Discrete Variables<a class="anchor-link" href="#Dependency-Between-Discrete-Variables"> </a>
+</h3>
+<p>So far we have not differentiated between sampling continuous and discrete variables (e.g. we generate our copula and then use a generalize inverse transform to return dependent variables of arbitrary distribution be they Gaussian or Poisson). Unfortunately things are not quite that simple if we are targetting a specific level of Pearson correlation (note that previously we showed why Pearson correlation is an imperfect measure, but in practical situations it is sometimes the only metric we have). Let's use the following definitions of variables:</p>
+<ol>
+<li>$(Z_1,...,Z_N)$ are sample from a multivariate distribution with marginal distribution functions $G_i(.)$</li>
+<li>$(U_1,...,U_N) = (G_1(Z_1),...,G_N(Z_N))$ are rank dependent uniforms corresponding to $Z_i$</li>
+<li>$(X_1,...,X_N) = (F^{-1}_1(U_1),...,F^{-1}_2(U_2))$ are our discrete variable transforms</li>
+</ol>
+<p>We then have that in general:</p>
+<p>
+$$Corr_{Pearson}(Z_i, Z_j) \neq Corr_{Pearson}(U_i, U_j) \neq Corr_{Pearson}(X_i, X_j)$$
+</p>
+<p>This is not always rue for continuous variables e.g. when a Gaussian multi-variate and suitably chosen $F(.)$. To overcome this for discrete variables we often have to adjust our input parameters and sensitivity test until a desired output correlation is reached. In the case of large $N$ this quickly becomes prohibitive and we simply have to accept the biases our modelling procedure has, in some cases this can lead to large mis-statements in the model and thus we can draw incorrect conclusions.</p>
+<p>It has been shown (in the Gaussian dependency, Poisson/eneralized Poisson/negative-binomial marginal cases) that regular vines have lower biases and do a better job at representing the input calibration. This is especially useful in cases of high dispersion where the typical approaches can lead to large inaccuracies.</p>
+<h3 id="Sampling-from-Regular-Vines">
+<a class="anchor" href="#Sampling-from-Regular-Vines" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sampling from Regular Vines<a class="anchor-link" href="#Sampling-from-Regular-Vines"> </a>
+</h3>
+<h4 id="Sampling-the-D-Vine">
+<a class="anchor" href="#Sampling-the-D-Vine" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sampling the D-Vine<a class="anchor-link" href="#Sampling-the-D-Vine"> </a>
+</h4>
+<p>We will now move onto the problem of sampling from the D-Vine, we start with the D-Vine since it's structure makes it easier to sample from and provides a good foundation and further explanation of what we have seen so far.</p>
+<h5 id="Inverse-Transform-Method">
+<a class="anchor" href="#Inverse-Transform-Method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Inverse Transform Method<a class="anchor-link" href="#Inverse-Transform-Method"> </a>
+</h5>
+<p>Let $(u_1, u_2, u_3, u_4)$ be 4 iid samples from a uniform distribution. We use the notaion: $F_{i | j:x_j}$ to be the cumulative distribution function of $X_j$ given that $X_i = i$. Then we can produce a sample $(x_1, x_2, x_3, x_4)$ from the joint distribution $(X_1, X_2, X_3, X_4)$ specified by our D-Vine as:</p>
+\begin{align}
+x_1 &amp;= u_1      \\
+x_2 &amp;= F^{-1}_{2|1:x_1}(u_2)        \\
+x_3 &amp;= F^{-1}_{3|2:x_2}(F^{-1}_{3|12:F_{1|2}(x_1)}(u_3))     \\
+x_4 &amp;= F^{-1}_{4|3:x_3}(F^{-1}_{4|23:F_{2|3}(x_2)}(F^{-1}_{4|123:F_{1|23}(x_1)}(u_4)))
+\end{align}<p>We can simply repeat this to arbitrarily high dimension. A similar approach exists for regular vines but we need to be more careful about the labelling and ordering of variables.</p>
+<h5 id="Acceptance-Rejection-Method">
+<a class="anchor" href="#Acceptance-Rejection-Method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Acceptance-Rejection Method<a class="anchor-link" href="#Acceptance-Rejection-Method"> </a>
+</h5>
+<p>From before recall that:</p>
+<p>
+$$c(x_1,...,x_N) = \prod_{e \in  E(\mathcal{V})} c_{e_1,e_2 | D_e} ( F_{e_1 | D_e}(x_{e_1}) , F_{e_2| D_e}(x_{e_2}))$$
+</p>
+<p>We can use this in an acceptance-rejection scheme in the usual way: we generate multi-variate uniform variates and then accept/reject samples based on this density above. This is no different from what we have seen before and the usual observations about acceptance rates, etc. still apply.</p>
+<p>We can see that while the specification of the vine copulae are slightly different to the copulae we looked at previously we can see that we can sample using the same tools as before.</p>
+<h4 id="Generic-Sampling-Method">
+<a class="anchor" href="#Generic-Sampling-Method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Generic Sampling Method<a class="anchor-link" href="#Generic-Sampling-Method"> </a>
+</h4>
+<p>We now move onto looking at sampling from vine copulas with general dimensions. We will present these in pseudocode. In all examples the "output" will be the variables $(u_1,...,u_N)$ which are multi-variate uniform with the vine copula induced dependency. Other interim values will be calculated.</p>
+<hr>
+<p><strong>Sampling from the C-vine</strong></p>
+<ol>
+<li>Generate $w_1,...,w_N$ iid $U[0,1]$ variates</li>
+<li>Set: $u_1 = w_1$</li>
+<li>Set: $u_2 = C^{-1}_{2|1}(w_2 |w_1)$</li>
+<li>For $i &gt; 2$:<ol>
+<li>Set $t=w_i$</li>
+<li>For $j = i - 1, i-2,...,1$:<ol>
+<li>$t = C^{-1}_{i |j:1,...,j-1}(t|w_j)$</li>
+</ol>
+</li>
+<li>$u_i = t$</li>
+</ol>
+</li>
+<li>Return: $(u_1,...,u_N)$</li>
+</ol>
+<hr>
+<hr>
+<p><strong>Sampling from the D-vine</strong></p>
+<ol>
+<li>Generate $w_1,...,w_N$ iid $U[0,1]$ variates. Initialize $NxN$ matrices $A=(a_{i,j})$ and $B(b_{i,j})$</li>
+<li>Set: $u_1 = a_{1,1} = b_{1,1} = w_1$</li>
+<li>For $i \geq 2$:<ol>
+<li>$a_{i,1} = w_i$</li>
+<li>For $j=2...i$:<ol>
+<li>$a_{i,j} = C^{-1}_{i |j-1:j,...,i-1}(a_{i,j-1}|b{i-1,j-1})$</li>
+</ol>
+</li>
+<li>u<em>i = b</em>{i,i} = a_{i,i}</li>
+<li>For $j=i-1,..,1$:<ol>
+<li>$b_{i,j} =C_{j|i:j+1,...,i-1}(b_{i-1,j}|b{i,j+1})$</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>Return $(u_1,...,u_N)$</li>
+</ol>
+<hr>
+<p>Sampling from an R-vine requires a little more work in labelling the variables due to the lack of structure. We use indexing:</p>
+<p>
+$$ 12, k_{3,1}3; k_{3,2}3|k_{3,1}; ... ; k_{i,1}i; k_{i,2}i | k_{i,1}; ... ; k_{i,i-1}i|k_{i1}; ... ; k_{n,1}n' ...; k_{n,n-1}n|k_{n,1}; ... k_{n,n-2} $$
+</p>
+<p>With: $(k_{i,1}, ... , k_{i,i-1})$ some pemutation on $(1,...,i-1)$ (e.g. C-vine $k_{i,j} =j$ and D-vine $k_{i,j} = i-j$). With this in mind we can move on to general R-vine sampling.</p>
+<hr>
+<p><strong>Sampling from the R-vine</strong></p>
+<ol>
+<li>Generate $w_1,...,w_N$ iid $U[0,1]$ variates. Initialize $NxN$ matrices $A=(a_{i,j})$ and $B(b_{i,j})$</li>
+<li>Set: $u_1 = a_{1,1} = b_{1,1} = w_1$</li>
+<li>For $i \geq 2$:<ol>
+<li>$M= \{ k_{i,1}, ... , k_{i,i-2} \}$</li>
+<li>$v_{i,k_{i,i-1},M} = v_{i, \{ k_{i,i-1} \cup M \}} = w_i$</li>
+<li>$a_{i,1} = w_i$</li>
+<li>For $j \geq 2$<ol>
+<li>$M= \{ k_{i,1}, ... , k_{i,i-j} \}$</li>
+<li>$v_{i,M} = C^{-1}_{i |k_{i,i+1-j}:M}(a_{i,j-1}|v_{i,i+1-j,M})$</li>
+<li>$a_{i,j} = v_{i,M}$</li>
+</ol>
+</li>
+<li>$u_i = a_{i,i}$</li>
+<li>$b_{i,i} = a_{i,i}$</li>
+<li>For $j=i-1,...1$:<ol>
+<li>$M= \{ k_{i,1}, ... , k_{i,i-1-j} \}$</li>
+<li>$v_{k_{i,i-j},i,M} = C_{k_{i,i-j}|i:M}(v_{k_{i,i-j},M}|a_{i,j+1})$</li>
+<li>$b_{i,j} = v_{k_{i,i-j},i,M}$</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>Return $(u_1,...,u_N)$</li>
+</ol>
+<hr>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Vine-Copula-packages">
+<a class="anchor" href="#Vine-Copula-packages" aria-hidden="true"><span class="octicon octicon-link"></span></a>Vine-Copula packages<a class="anchor-link" href="#Vine-Copula-packages"> </a>
+</h3>
+<p>Thankfully there are pre-canned packages that we can use to sample from vines (as well as performing calibration procedures and other things we have not looked at in this blog). The R language perhaps has the most widely used (given it is used by statistiticians) in the "VineCopula" package. In python we have the following: <a href="https://pypi.org/project/pyvine/">pyvine</a>, <a href="https://github.com/vinecopulib/pyvinecopulib">pyvinecopulalib</a> and others.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Conclusion">
+<a class="anchor" href="#Conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion<a class="anchor-link" href="#Conclusion"> </a>
+</h2>
+<p>In this blog post we have seen a gentle introduction to the concept of vine copulae, what they are, how to classify them and how to sample from them. In general vine copulae are useful in modelling high dimension multi-variate systems. They tend to perform best (in this authors experience) when the vine structure is sparse (i.e. lots of pairwise relations are independent) and on occasion very tail dependent behaviour can cause instability (although this is also true of other copula methods also). Although we have not covered the process of calibrating vine copulae there are a lot of powerful methods available to us in order to do this which is very useful. Vine copulae are increasingly used as a way of simulating "synthetic data" in order to feed the ever more data-hungry deep machine learning methodologies.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<h2 id="References">
+<a class="anchor" href="#References" aria-hidden="true"><span class="octicon octicon-link"></span></a>References<a class="anchor-link" href="#References"> </a>
+</h2>
+<p>The homepage for all things vine copula is: <a href="https://www.groups.ma.tum.de/en/statistics/home/">homepage</a></p>
+<p>In preparing this blog post I relied heavily on the book:</p>
+<p>Dependence Modelling: Vine Copula Handbook - Dorota Kurowicka and Harry Joe</p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><a class="u-url" href="/monte-carlo-methods-3" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>A blog about maths, probability, modelling and computing.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/lewiscoleblog" title="lewiscoleblog"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/jazzcoffeestuff" title="jazzcoffeestuff"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
